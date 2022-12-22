@@ -1,19 +1,5 @@
 # Helm Release Module
 
-[![](https://img.shields.io/github/license/terraform-module/terraform-helm-release)](https://github.com/terraform-module/terraform-helm-release)
-![](https://img.shields.io/github/v/tag/terraform-module/terraform-helm-release)
-[![](https://img.shields.io/github/workflow/status/terraform-module/terraform-helm-release/commit-check/master)](https://github.com/terraform-module/terraform-helm-release/actions?query=is%3Acommit-check)
-![](https://github.com/terraform-module/terraform-helm-release/workflows/commit-check/badge.svg)
-![](https://img.shields.io/issues/github/terraform-module/terraform-helm-release)
-![](https://img.shields.io/github/issues/terraform-module/terraform-helm-release)
-![](https://img.shields.io/github/issues-closed/terraform-module/terraform-helm-release)
-[![](https://img.shields.io/github/languages/code-size/terraform-module/terraform-helm-release)](https://github.com/terraform-module/terraform-helm-release)
-[![](https://img.shields.io/github/repo-size/terraform-module/terraform-helm-release)](https://github.com/terraform-module/terraform-helm-release)
-![](https://img.shields.io/github/languages/top/terraform-module/terraform-helm-release?color=green&logo=terraform&logoColor=blue)
-![](https://img.shields.io/github/commit-activity/m/terraform-module/terraform-helm-release)
-![](https://img.shields.io/github/contributors/terraform-module/terraform-helm-release)
-![](https://img.shields.io/github/last-commit/terraform-module/terraform-helm-release)
-
 ## Table Of Contents
 
 - [Helm Release Module](#helm-release-module)
@@ -39,8 +25,7 @@ Here's the gist of using it via github.
 
 ```terraform
 module jenkins {
-  source  = "terraform-module/release/helm"
-  version = "2.6.0"
+  source  = "../helm-addon"
 
   namespace  = "app-namespace"
   repository =  "https://charts.helm.sh/stable"

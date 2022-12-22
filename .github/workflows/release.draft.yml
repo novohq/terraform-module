@@ -4,7 +4,7 @@ name: release.draft
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
     inputs:
       prerelease:

@@ -54,7 +54,7 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "helm_addon" {
-  source               = "./helm-service"
+  source               = "git::git@github.com:gruntwork-io/terraform-aws-service-catalog//modules/services/helm-service?ref=v0.99.2"
   helm_repository      = var.helm_repository
   helm_chart           = var.helm_chart
   helm_chart_version   = var.helm_chart_version

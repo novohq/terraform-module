@@ -54,7 +54,7 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "helm_addon" {
-  source               = "../helm-service"
+  source               = "./helm-service"
   helm_repository      = var.helm_repository
   helm_chart           = var.helm_chart
   helm_chart_version   = var.helm_chart_version

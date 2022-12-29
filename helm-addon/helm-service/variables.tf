@@ -110,3 +110,4 @@ variable "sleep_for_resource_culling" {
   type        = bool
   default     = false
 }
+

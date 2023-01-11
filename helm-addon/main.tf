@@ -3,7 +3,6 @@ provider "aws" {
 
   # Skip all checks if not using eks auth, as they are unnecessary.
   skip_credentials_validation = var.kubeconfig_auth_type != "eks"
-  skip_get_ec2_platforms      = var.kubeconfig_auth_type != "eks"
   skip_region_validation      = var.kubeconfig_auth_type != "eks"
   skip_requesting_account_id  = var.kubeconfig_auth_type != "eks"
   skip_metadata_api_check     = var.kubeconfig_auth_type != "eks"
@@ -23,12 +22,12 @@ provider "helm" {
 
     # EKS clusters use short-lived authentication tokens that can expire in the middle of an 'apply' or 'destroy'. To
     # avoid this issue, we use an exec-based plugin here to fetch an up-to-date token. Note that this code requires a
-    # binary — either kubergrunt or aws — to be installed and on your PATH.
+    # binary—either kubergrunt or aws—to be installed and on your PATH.
     dynamic "exec" {
       for_each = var.kubeconfig_auth_type == "eks" && var.use_exec_plugin_for_auth ? ["once"] : []
 
       content {
-        api_version = "client.authentication.k8s.io/v1beta1"
+        api_version = "client.authentication.k8s.io/v1"
         command     = var.use_kubergrunt_to_fetch_token ? "kubergrunt" : "aws"
         args = (
           var.use_kubergrunt_to_fetch_token

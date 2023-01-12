@@ -39,7 +39,7 @@ resource "helm_release" "application" {
   # repository_username        = lookup(var.repository_username, null)
   # repository_password        = lookup(var.repository_password, null)
   # force_update               = lookup(var.force_update, true)
-  wait                       = lookup(var.wait, true)
+  wait                         = var.wait
   # recreate_pods              = lookup(var.recreate_pods, true)
   # max_history                = lookup(var.max_history, 5)
   # lint                       = lookup(var.lint, true)

@@ -64,6 +64,14 @@ module "helm_addon" {
     yamlencode(
       var.helm_chart_values
     ),
+    nameOverride = var.application_name
+    serviceAccount = {
+      create = "true"
+      name   = var.service_account_name
+      annotations = {
+        "eks.amazonaws.com/role-arn" = local.iam_role_arn
+      }
+    }
   ]
 
   # helm_chart_values = {

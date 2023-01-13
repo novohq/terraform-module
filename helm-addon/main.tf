@@ -60,19 +60,25 @@ module "helm_addon" {
   application_name     = var.application_name
   namespace            = var.namespace
 
-  helm_chart_values = {
-    nameOverride = var.application_name
-    serviceAccount = {
-      create = "true"
-      name   = var.service_account_name
-      annotations = {
-        "eks.amazonaws.com/role-arn" = local.iam_role_arn
-      }
-    }
-    service = {
-      type = "ClusterIP"
-    }
-  }
+  helm_chart_values = [
+    yamlencode(
+      var.helm_chart_values
+    ),
+  ]
+
+  # helm_chart_values = {
+  #   nameOverride = var.application_name
+  #   serviceAccount = {
+  #     create = "true"
+  #     name   = var.service_account_name
+  #     annotations = {
+  #       "eks.amazonaws.com/role-arn" = local.iam_role_arn
+  #     }
+  #   }
+  #   service = {
+  #     type = "ClusterIP"
+  #   }
+  # }
 
   eks_iam_role_for_service_accounts_config = var.eks_iam_role_for_service_accounts_config
 

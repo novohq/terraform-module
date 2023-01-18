@@ -59,7 +59,7 @@ resource "helm_release" "application" {
   timeout                    = var.wait_timeout
 
   values = [
-    yamlencode(
+    tostring(
       var.helm_chart_values
     ),
   ]

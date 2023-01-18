@@ -58,7 +58,11 @@ resource "helm_release" "application" {
   # replace                    = lookup(var.replace, false)
   timeout                    = var.wait_timeout
 
-  values = var.helm_chart_values
+  helm_chart_values = [
+    yamlencode(
+      var.helm_chart_values
+    ),
+  ]
 
 }
 

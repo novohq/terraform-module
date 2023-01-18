@@ -53,32 +53,40 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "helm_addon" {
-  source               = ".//helm-service"
+  source               = "..//helm-service"
   helm_repository      = var.helm_repository
   helm_chart           = var.helm_chart
   helm_chart_version   = var.helm_chart_version
   application_name     = var.application_name
   namespace            = var.namespace
 
-  helm_chart_values = [
-    yamlencode(
-      var.helm_chart_values
-    ),
-  ]
-
-  # helm_chart_values = {
-  #   nameOverride = var.application_name
-  #   serviceAccount = {
-  #     create = "true"
-  #     name   = var.service_account_name
-  #     annotations = {
-  #       "eks.amazonaws.com/role-arn" = local.iam_role_arn
-  #     }
-  #   }
-  #   service = {
-  #     type = "ClusterIP"
-  #   }
-  # }
+  helm_chart_values = {
+    nameOverride = var.application_name
+    serviceAccount = {
+      create = "true"
+      name   = var.service_account_name
+      annotations = {
+        "eks.amazonaws.com/role-arn" = local.iam_role_arn
+      }
+    }
+    service = {
+      type = "ClusterIP"
+    }
+    auth = {
+      username = var.mq_user
+      password = var.mq_password
+    }
+    resources = {
+      requests = { 
+        memory = var.mq_request_memory, 
+        cpu = var.mq_request_cpu
+      },
+      limits = { 
+        memory = var.mq_limit_memory, 
+        cpu = var.mq_limit_cpu 
+      }
+    }
+  }
 
   eks_iam_role_for_service_accounts_config = var.eks_iam_role_for_service_accounts_config
 

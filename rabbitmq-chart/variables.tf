@@ -159,3 +159,38 @@ variable "sleep_for_resource_culling" {
   default     = false
 }
 
+variable "mq_user" {
+  description = "Rabbitmq user"
+  type        = string
+  default     = "rabbitmq"
+}
+
+variable "mq_password" {
+  description = "Rabbitmq password"
+  type        = string
+  default     = "rabbitmq"
+}
+
+variable "mq_request_memory" {
+  description = "Request memory"
+  type        = string
+  default     = "1000Mi"
+}
+
+variable "mq_request_cpu" {
+  description = "Request memory"
+  type        = string
+  default     = "500m"
+}
+
+variable "mq_limit_memory" {
+  description = "Limit memory"
+  type        = string
+  default     = "1000Mi"
+}
+
+variable "mq_limit_cpu" {
+  description = "Limit memory"
+  type        = string
+  default     = "500m"
+}

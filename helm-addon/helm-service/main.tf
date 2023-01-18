@@ -58,11 +58,7 @@ resource "helm_release" "application" {
   # replace                    = lookup(var.replace, false)
   timeout                    = var.wait_timeout
 
-  values = [
-    tostring(
-      var.helm_chart_values
-    ),
-  ]
+  values = var.helm_chart_values
 
 }
 

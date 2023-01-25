@@ -10,15 +10,16 @@ terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
-      # This module is compatible with AWS provider ~> 4.6.0, but to make upgrading easier, we are setting 3.75.1 as the minimum version.
+      # AWS provider 4.x was released with backward incompatibilities that this module is not yet adapted to.
       version = ">= 3.75.1"
     }
 
     helm = {
       source = "hashicorp/helm"
-      # NOTE: 2.6.0 has a regression bug that prevents usage of the exec block with data source references, so we exclude
-      # that version. See https://github.com/hashicorp/terraform-provider-kubernetes/issues/1464 for more details.
-      version = "~> 2.0, != 2.6.0"
+      # NOTE: 2.6.0 has a regression bug that prevents usage of the exec block with data source references, so we lock
+      # to a version less than that. See https://github.com/hashicorp/terraform-provider-kubernetes/issues/1464 for more
+      # details.
+      version = "~> 2.0, < 2.6.0"
     }
   }
 }

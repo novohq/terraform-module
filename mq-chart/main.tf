@@ -124,11 +124,6 @@ locals {
           ? "ClusterIP"
           : "NodePort"
         )
-        ports = merge(local.additional_service_ports, {
-          app = {
-            port = var.service_port
-          }
-        })
     }
     auth = {
       username = var.mq_user

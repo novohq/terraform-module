@@ -105,6 +105,7 @@ locals {
     : ""
   )
   helm_chart_input = merge(
+    {
     nameOverride = var.application_name
     serviceAccount = {
         # Create a new service account if service_account_name is not blank and it is not referring to an existing Service
@@ -143,7 +144,7 @@ locals {
         cpu = var.mq_limit_cpu 
       }
     }
-
+  },
   )
 }
 # ---------------------------------------------------------------------------------------------------------------------

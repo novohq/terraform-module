@@ -39,12 +39,12 @@ resource "helm_release" "application" {
   # repository_ca_file         = lookup(var.repository_ca_file, null)
   # repository_username        = lookup(var.repository_username, null)
   # repository_password        = lookup(var.repository_password, null)
-  # force_update               = lookup(var.force_update, true)
+  force_update                 = var.force_update
   wait                         = var.wait
   # recreate_pods              = lookup(var.recreate_pods, true)
-  # max_history                = lookup(var.max_history, 5)
+  max_history                = var.max_history
   # lint                       = lookup(var.lint, true)
-  # cleanup_on_fail            = lookup(var.cleanup_on_fail, false)
+  cleanup_on_fail            = var.cleanup_on_fail
   # create_namespace           = lookup(var.create_namespace, false)
   # disable_webhooks           = lookup(var.disable_webhooks, false)
   # verify                     = lookup(var.verify, false)
@@ -67,7 +67,6 @@ resource "helm_release" "application" {
       ),
     ),
   ]
-  cleanup_on_fail = var.cleanup_on_fail
   depends_on = [null_resource.sleep_for_resource_culling]
 }
 

@@ -23,6 +23,23 @@ variable "helm_chart" {
   type        = string
 }
 
+variable "force_update" {
+  description = "Chart name to be installed. The chart name can be local path, a URL to a chart, or the name of the chart if repository is specified. It is also possible to use the <repository>/<chart> format here if you are running Terraform on a system that the repository has been added to with helm repo add but this is not recommended."
+  type        = bool
+  default     = true
+}
+
+variable "max_history" {
+  description = "Chart name to be installed. The chart name can be local path, a URL to a chart, or the name of the chart if repository is specified. It is also possible to use the <repository>/<chart> format here if you are running Terraform on a system that the repository has been added to with helm repo add but this is not recommended."
+  type        = string
+  default     = 10
+}
+
+variable "cleanup_on_fail" {
+  description = "Chart name to be installed. The chart name can be local path, a URL to a chart, or the name of the chart if repository is specified. It is also possible to use the <repository>/<chart> format here if you are running Terraform on a system that the repository has been added to with helm repo add but this is not recommended."
+  type        = bool
+  default     = true
+}
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL MODULE PARAMETERS
 # These variables have defaults, but may be overridden by the operator.
@@ -118,12 +135,6 @@ variable "sleep_for_resource_culling" {
   description = "Sleep for 30 seconds to allow Kubernetes time to remove associated AWS resources."
   type        = bool
   default     = false
-}
-
-variable "cleanup_on_fail" {
-  description = "Allow deletion of new resources created in this upgrade when upgrade fails."
-  type        = bool
-  default     = null
 }
 
 variable "values_file_path" {

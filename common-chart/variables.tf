@@ -11,6 +11,7 @@ variable "application_name" {
 variable "namespace" {
   description = "The Kubernetes Namespace to deploy the helm chart into."
   type        = string
+  default     = null
 }
 
 variable "helm_repository" {

@@ -206,3 +206,200 @@ variable "mq_limit_cpu" {
   default     = "500m"
 }
 
+## ALB health checks
+
+variable "alb_health_check_protocol" {
+  description = "Protocol (HTTP or HTTPS) that the ALB health check should use to connect to the application container."
+  type        = string
+  default     = "HTTP"
+}
+
+variable "alb_health_check_port" {
+  description = "String value specifying the port that the ALB health check should probe. By default, this will be set to the traffic port (the NodePort or port where the service receives traffic). This can also be set to a Kubernetes named port, or direct integer value. See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/#healthcheck-port for more information."
+  type        = string
+  default     = "traffic-port"
+}
+
+variable "alb_health_check_path" {
+  description = "URL path for the endpoint that the ALB health check should ping. Defaults to /."
+  type        = string
+  default     = "/"
+}
+
+variable "alb_health_check_interval" {
+  description = "Interval between ALB health checks in seconds."
+  type        = number
+  default     = 30
+}
+
+variable "alb_health_check_timeout" {
+  description = "The timeout, in seconds, during which no response from a target means a failed health check."
+  type        = number
+  default     = 10
+}
+
+variable "alb_health_check_healthy_threshold" {
+  description = "The number of consecutive health check successes required before considering an unhealthy target healthy."
+  type        = number
+  default     = 2
+}
+
+variable "alb_health_check_success_codes" {
+  description = "The HTTP status code that should be expected when doing health checks against the specified health check path. Accepts a single value (200), multiple values (200,201), or a range of values (200-300)."
+  type        = string
+  default     = "200"
+}
+
+## ALB ACM certificate
+
+variable "alb_acm_certificate_arns" {
+  description = "A list of ACM certificate ARNs to attach to the ALB. The first certificate in the list will be added as default certificate."
+  type        = list(string)
+  default     = []
+}
+
+# Access point configuration. Used to configure Service and Ingress/ALB (if externally exposed to cluster)
+
+variable "expose_type" {
+  description = "How the service will be exposed in the cluster. Must be one of `external` (accessible over the public Internet), `internal` (only accessible from within the same VPC as the cluster), `cluster-internal` (only accessible within the Kubernetes network), `none` (deploys as a headless service with no service IP)."
+  type        = string
+  default     = "cluster-internal"
+}
+
+variable "ingress_configure_ssl_redirect" {
+  description = "When true, HTTP requests will automatically be redirected to use SSL (HTTPS). Used only when expose_type is either external or internal."
+  type        = bool
+  default     = true
+}
+
+variable "ingress_ssl_redirect_rule_already_exists" {
+  description = "Set to true if the Ingress SSL redirect rule is managed externally. This is useful when configuring Ingress grouping and you only want one service to be managing the SSL redirect rules. Only used if ingress_configure_ssl_redirect is true."
+  type        = bool
+  default     = false
+}
+
+variable "ingress_ssl_redirect_rule_requires_path_type" {
+  description = "Whether or not the redirect rule requires setting path type. Set to true when deploying to Kubernetes clusters with version >=1.19. Only used if ingress_configure_ssl_redirect is true."
+  type        = bool
+  default     = true
+}
+
+variable "ingress_listener_protocol_ports" {
+  description = "A list of maps of protocols and ports that the ALB should listen on."
+  type = list(object({
+    protocol = string
+    port     = number
+  }))
+  default = [
+    {
+      protocol = "HTTP"
+      port     = 80
+    },
+    {
+      protocol = "HTTPS"
+      port     = 443
+    },
+  ]
+}
+
+variable "ingress_path" {
+  description = "Path prefix that should be matched to route to the service. For Kubernetes Versions <1.19, Use /* to match all paths. For Kubernetes Versions >=1.19, use / with ingress_path_type set to Prefix to match all paths."
+  type        = string
+  default     = "/"
+}
+
+variable "ingress_path_type" {
+  description = "The path type to use for the ingress rule. Refer to https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types for more information."
+  type        = string
+  default     = "Prefix"
+}
+
+variable "ingress_backend_protocol" {
+  description = "The protocol used by the Ingress ALB resource to communicate with the Service. Must be one of HTTP or HTTPS."
+  type        = string
+  default     = "HTTP"
+}
+
+variable "ingress_group" {
+  description = "Assign the ingress resource to an IngressGroup. All Ingress rules of the group will be collapsed to a single ALB. The rules will be collapsed in priority order, with lower numbers being evaluated first."
+  type = object({
+    # Ingress group to assign to.
+    name = string
+    # The priority of the rules in this Ingress. Smaller numbers have higher priority.
+    priority = number
+  })
+  default = null
+}
+
+variable "ingress_target_type" {
+  description = "Controls how the ALB routes traffic to the Pods. Supports 'instance' mode (route traffic to NodePort and load balance across all worker nodes, relying on Kubernetes Service networking to route to the pods), or 'ip' mode (route traffic directly to the pod IP - only works with AWS VPC CNI). Must be set to 'ip' if using Fargate. Only used if expose_type is not cluster-internal."
+  type        = string
+  default     = "instance"
+}
+
+variable "service_port" {
+  description = "The port to expose on the Service. This is most useful when addressing the Service internally to the cluster, as it is ignored when connecting from the Ingress resource."
+  type        = number
+  default     = 80
+}
+
+variable "ingress_access_logs_s3_bucket_already_exists" {
+  description = "Set to true if the S3 bucket to store the Ingress access logs is managed external to this module."
+  type        = bool
+  default     = false
+}
+
+variable "force_destroy_ingress_access_logs" {
+  description = "A boolean that indicates whether the access logs bucket should be destroyed, even if there are files in it, when you run Terraform destroy. Unless you are using this bucket only for test purposes, you'll want to leave this variable set to false."
+  type        = bool
+  default     = false
+}
+
+variable "ingress_access_logs_s3_bucket_name" {
+  description = "The name to use for the S3 bucket where the Ingress access logs will be stored. If you leave this blank, a name will be generated automatically based on var.application_name."
+  type        = string
+  default     = ""
+}
+
+variable "ingress_access_logs_s3_prefix" {
+  description = "The prefix to use for ingress access logs associated with the ALB. All logs will be stored in a key with this prefix. If null, the application name will be used."
+  type        = string
+  default     = null
+}
+
+variable "num_days_after_which_archive_ingress_log_data" {
+  description = "After this number of days, Ingress log files should be transitioned from S3 to Glacier. Set to 0 to never archive logs."
+  type        = number
+  default     = 0
+}
+
+variable "num_days_after_which_delete_ingress_log_data" {
+  description = "After this number of days, Ingress log files should be deleted from S3. Set to 0 to never delete logs."
+  type        = number
+  default     = 0
+}
+
+variable "ingress_annotations" {
+  description = "A list of custom ingress annotations, such as health checks and TLS certificates, to add to the Helm chart. See: https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/guide/ingress/annotations/"
+  type        = map(string)
+  default     = {}
+
+  # Example:
+  # {
+  #   "alb.ingress.kubernetes.io/shield-advanced-protection" : "true"
+  # }
+}
+
+# DNS Info
+
+variable "domain_name" {
+  description = "The domain name for the DNS A record to bind to the Ingress resource for this service (e.g. service.foo.com). Depending on your external-dns configuration, this will also create the DNS record in the configured DNS service (e.g., Route53)."
+  type        = string
+  default     = null
+}
+
+variable "domain_propagation_ttl" {
+  description = "The TTL value of the DNS A record that is bound to the Ingress resource. Only used if var.domain_name is set and external-dns is deployed."
+  type        = number
+  default     = null
+}

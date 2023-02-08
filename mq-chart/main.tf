@@ -104,6 +104,70 @@ locals {
     )
     : ""
   )
+
+  alb_health_check = {
+    "alb.ingress.kubernetes.io/healthcheck-port"             = var.alb_health_check_port
+    "alb.ingress.kubernetes.io/healthcheck-protocol"         = var.alb_health_check_protocol
+    "alb.ingress.kubernetes.io/healthcheck-path"             = var.alb_health_check_path
+    "alb.ingress.kubernetes.io/healthcheck-interval-seconds" = tostring(var.alb_health_check_interval)
+    "alb.ingress.kubernetes.io/healthcheck-timeout-seconds"  = tostring(var.alb_health_check_timeout)
+    "alb.ingress.kubernetes.io/healthy-threshold-count"      = tostring(var.alb_health_check_healthy_threshold)
+    "alb.ingress.kubernetes.io/success-codes"                = var.alb_health_check_success_codes
+  }
+
+  # Assemble a complete map of ingress annotations
+  ingress_annotations = merge(
+    {
+      "kubernetes.io/ingress.class"      = "alb"
+      "alb.ingress.kubernetes.io/scheme" = var.expose_type == "external" ? "internet-facing" : "internal"
+      # We manually construct the list as a string here to avoid the values being converted as string, as opposed to
+      # ints
+      "alb.ingress.kubernetes.io/listen-ports"             = "[${join(",", local.ingress_listener_protocol_ports)}]"
+      "alb.ingress.kubernetes.io/backend-protocol"         = var.ingress_backend_protocol
+      "alb.ingress.kubernetes.io/load-balancer-attributes" = "access_logs.s3.enabled=true,access_logs.s3.bucket=${module.alb_access_logs_bucket.s3_bucket_name},access_logs.s3.prefix=${local.access_logs_s3_prefix}"
+    },
+    (
+      var.ingress_group != null
+      ? {
+        "alb.ingress.kubernetes.io/group.name" = var.ingress_group.name
+      }
+      : {}
+    ),
+    (
+      # NOTE: can't use && because Terraform processes the conditional in one pass, and boolean operators are not short
+      # circuit.
+      var.ingress_group != null
+      ? (
+        var.ingress_group.priority != null
+        ? {
+          "alb.ingress.kubernetes.io/group.order" = tostring(var.ingress_group.priority)
+        }
+        : {}
+      )
+      : {}
+    ),
+    (
+      var.ingress_configure_ssl_redirect
+      ? {
+        "alb.ingress.kubernetes.io/actions.ssl-redirect" = "{\"Type\": \"redirect\", \"RedirectConfig\": { \"Protocol\": \"HTTPS\", \"Port\": \"443\", \"StatusCode\": \"HTTP_301\"}}"
+      }
+      : {}
+    ),
+    (
+      var.domain_propagation_ttl != null
+      ? {
+        "external-dns.alpha.kubernetes.io/ttl" = tostring(var.domain_propagation_ttl)
+      }
+      : {}
+    ),
+    {
+      "alb.ingress.kubernetes.io/certificate-arn" = join(",", var.alb_acm_certificate_arns),
+      "alb.ingress.kubernetes.io/target-type"     = var.ingress_target_type
+    },
+    local.alb_health_check,
+    var.ingress_annotations,
+  )
+
   helm_chart_input = merge(
     {
     nameOverride = var.application_name
@@ -123,6 +187,36 @@ locals {
           var.expose_type == "cluster-internal" || var.expose_type == "none"
           ? "ClusterIP"
           : "NodePort"
+        )
+    }
+    ingress = {
+        enabled     = var.expose_type != "cluster-internal" && var.expose_type != "none"
+        path        = "'${var.ingress_path}'"
+        pathType    = var.ingress_path_type
+        hosts       = var.domain_name != null ? [var.domain_name] : []
+        servicePort = "app"
+        annotations = local.ingress_annotations
+        # Only configure the redirect path if using ssl redirect
+        additionalPathsHigherPriority = (
+          # When in Ingress Group mode, we need to make sure to only define this once per group.
+          var.ingress_configure_ssl_redirect && var.ingress_ssl_redirect_rule_already_exists == false
+          ? [
+            (
+              var.ingress_ssl_redirect_rule_requires_path_type
+              ? {
+                path        = "/"
+                pathType    = "Prefix"
+                serviceName = "ssl-redirect"
+                servicePort = "use-annotation"
+              }
+              : {
+                path        = "/*"
+                serviceName = "ssl-redirect"
+                servicePort = "use-annotation"
+              }
+            )
+          ]
+          : []
         )
     }
     auth = {

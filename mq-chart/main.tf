@@ -189,7 +189,7 @@ locals {
         )
     }
     ingress = {
-        enabled     = true
+        enabled     = var.expose_type != "cluster-internal" && var.expose_type != "none"
         path        = "'${var.ingress_path}'"
         pathType    = var.ingress_path_type
         hostname    = var.domain_name != null ? [var.domain_name] : []

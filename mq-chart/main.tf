@@ -234,6 +234,13 @@ locals {
     }
   },
   )
+  # We use interpolate a string here to construct a list of protocol port mappings for the listener, that can then be injected
+  # into the input values. We do this instead of directly rendering the list because terraform does some type conversions
+  # in the yaml encode process.
+  ingress_listener_protocol_ports = [
+    for protocol_ports in var.ingress_listener_protocol_ports :
+    "{\"${protocol_ports["protocol"]}\": ${protocol_ports["port"]}}"
+  ]
 }
 # ---------------------------------------------------------------------------------------------------------------------
 # SET UP IAM ROLE FOR SERVICE ACCOUNT

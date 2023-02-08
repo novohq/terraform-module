@@ -124,7 +124,6 @@ locals {
       # ints
       "alb.ingress.kubernetes.io/listen-ports"             = "[${join(",", local.ingress_listener_protocol_ports)}]"
       "alb.ingress.kubernetes.io/backend-protocol"         = var.ingress_backend_protocol
-      "alb.ingress.kubernetes.io/load-balancer-attributes" = "access_logs.s3.enabled=true,access_logs.s3.bucket=${module.alb_access_logs_bucket.s3_bucket_name},access_logs.s3.prefix=${local.access_logs_s3_prefix}"
     },
     (
       var.ingress_group != null

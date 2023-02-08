@@ -189,34 +189,11 @@ locals {
         )
     }
     ingress = {
-        enabled     = var.expose_type != "cluster-internal" && var.expose_type != "none"
+        enabled     = true
         path        = "'${var.ingress_path}'"
         pathType    = var.ingress_path_type
-        hostname    = var.domain_name != null ? [var.domain_name] : []
-        servicePort = "app"
+        hostname    = var.domain_name
         annotations = local.ingress_annotations
-        # Only configure the redirect path if using ssl redirect
-        additionalPathsHigherPriority = (
-          # When in Ingress Group mode, we need to make sure to only define this once per group.
-          var.ingress_configure_ssl_redirect && var.ingress_ssl_redirect_rule_already_exists == false
-          ? [
-            (
-              var.ingress_ssl_redirect_rule_requires_path_type
-              ? {
-                path        = "/"
-                pathType    = "Prefix"
-                serviceName = "ssl-redirect"
-                servicePort = "use-annotation"
-              }
-              : {
-                path        = "/*"
-                serviceName = "ssl-redirect"
-                servicePort = "use-annotation"
-              }
-            )
-          ]
-          : []
-        )
     }
     auth = {
       username = var.mq_user

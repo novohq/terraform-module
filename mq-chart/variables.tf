@@ -143,12 +143,6 @@ variable "values_file_path" {
   default     = null
 }
 
-variable "expose_type" {
-  description = "How the service will be exposed in the cluster. Must be one of `external` (accessible over the public Internet), `internal` (only accessible from within the same VPC as the cluster), `cluster-internal` (only accessible within the Kubernetes network), `none` (deploys as a headless service with no service IP)."
-  type        = string
-  default     = "ClusterIP"
-}
-
 variable "override_chart_inputs" {
   description = "Override any computed chart inputs with this map. This map is shallow merged to the computed chart inputs prior to passing on to the Helm Release. This is provided as a workaround while the terraform module does not support a particular input value that is exposed in the underlying chart. Please always file a GitHub issue to request exposing additional underlying input values prior to using this variable."
 

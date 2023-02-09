@@ -397,3 +397,9 @@ variable "domain_propagation_ttl" {
   type        = number
   default     = null
 }
+
+variable "disk_size" {
+  description = "Disk size attached to rabbitmq"
+  type        = string
+  default     = "30Gi"
+}

@@ -105,16 +105,6 @@ locals {
     : ""
   )
 
-  alb_health_check = {
-    "alb.ingress.kubernetes.io/healthcheck-port"             = var.alb_health_check_port
-    "alb.ingress.kubernetes.io/healthcheck-protocol"         = var.alb_health_check_protocol
-    "alb.ingress.kubernetes.io/healthcheck-path"             = var.alb_health_check_path
-    "alb.ingress.kubernetes.io/healthcheck-interval-seconds" = tostring(var.alb_health_check_interval)
-    "alb.ingress.kubernetes.io/healthcheck-timeout-seconds"  = tostring(var.alb_health_check_timeout)
-    "alb.ingress.kubernetes.io/healthy-threshold-count"      = tostring(var.alb_health_check_healthy_threshold)
-    "alb.ingress.kubernetes.io/success-codes"                = var.alb_health_check_success_codes
-  }
-
   # Assemble a complete map of ingress annotations
   ingress_annotations = merge(
     {
@@ -146,13 +136,6 @@ locals {
       : {}
     ),
     (
-      var.ingress_configure_ssl_redirect
-      ? {
-        "alb.ingress.kubernetes.io/actions.ssl-redirect" = "{\"Type\": \"redirect\", \"RedirectConfig\": { \"Protocol\": \"HTTPS\", \"Port\": \"443\", \"StatusCode\": \"HTTP_301\"}}"
-      }
-      : {}
-    ),
-    (
       var.domain_propagation_ttl != null
       ? {
         "external-dns.alpha.kubernetes.io/ttl" = tostring(var.domain_propagation_ttl)
@@ -163,7 +146,6 @@ locals {
       "alb.ingress.kubernetes.io/certificate-arn" = join(",", var.alb_acm_certificate_arns),
       "alb.ingress.kubernetes.io/target-type"     = var.ingress_target_type
     },
-    local.alb_health_check,
     var.ingress_annotations,
   )
 
@@ -190,14 +172,17 @@ locals {
     }
     ingress = {
         enabled     = true
-        path        = "'${var.ingress_path}'"
-        pathType    = var.ingress_path_type
+        path        = "/*"
         hostname    = var.domain_name
         annotations = local.ingress_annotations
     }
     auth = {
       username = var.mq_user
       password = var.mq_password
+    }
+    persistence = {
+      enabled = true
+      size    = var.disk_size
     }
     resources = {
       requests = { 

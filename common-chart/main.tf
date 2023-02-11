@@ -39,12 +39,12 @@ resource "helm_release" "application" {
   # repository_ca_file         = lookup(var.repository_ca_file, null)
   # repository_username        = lookup(var.repository_username, null)
   # repository_password        = lookup(var.repository_password, null)
-  force_update                 = var.force_update
-  wait                         = var.wait
+  force_update = var.force_update
+  wait         = var.wait
   # recreate_pods              = lookup(var.recreate_pods, true)
-  max_history                = var.max_history
+  max_history = var.max_history
   # lint                       = lookup(var.lint, true)
-  cleanup_on_fail            = var.cleanup_on_fail
+  cleanup_on_fail = var.cleanup_on_fail
   # create_namespace           = lookup(var.create_namespace, false)
   # disable_webhooks           = lookup(var.disable_webhooks, false)
   # verify                     = lookup(var.verify, false)
@@ -57,7 +57,7 @@ resource "helm_release" "application" {
   # wait_for_jobs              = lookup(var.wait_for_jobs, false)
   # dependency_update          = lookup(var.dependency_update, false)
   # replace                    = lookup(var.replace, false)
-  timeout                    = var.wait_timeout
+  timeout = var.wait_timeout
 
   values = [
     yamlencode(
@@ -106,8 +106,8 @@ locals {
   )
   helm_chart_input = merge(
     {
-    nameOverride = var.application_name
-    serviceAccount = {
+      nameOverride = var.application_name
+      serviceAccount = {
         # Create a new service account if service_account_name is not blank and it is not referring to an existing Service
         # Account
         create = (!var.service_account_exists) && var.service_account_name != ""
@@ -115,8 +115,8 @@ locals {
         name        = var.service_account_name
         namespace   = var.namespace
         annotations = local.iam_role == "" ? {} : { "eks.amazonaws.com/role-arn" = local.iam_role }
-    }
-    service = {
+      }
+      service = {
         # When expose_type is cluster-internal, we do not want to associate an Ingress resource, or allow access
         # externally from the cluster, so we use ClusterIP service type.
         type = (
@@ -124,8 +124,8 @@ locals {
           ? "ClusterIP"
           : "NodePort"
         )
-    }
-  },
+      }
+    },
   )
 }
 # ---------------------------------------------------------------------------------------------------------------------

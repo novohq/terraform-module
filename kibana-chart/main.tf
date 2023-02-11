@@ -29,26 +29,20 @@ terraform {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "helm_release" "application" {
-  name       = var.application_name
-  repository = var.helm_repository
-  chart      = var.helm_chart
-  version    = var.helm_chart_version
-  namespace  = var.namespace
-  # repository_key_file        = lookup(var.repository_key_file, null)
-  # repository_cert_file       = lookup(var.repository_cert_file, null)
-  # repository_ca_file         = lookup(var.repository_ca_file, null)
-  # repository_username        = lookup(var.repository_username, null)
-  # repository_password        = lookup(var.repository_password, null)
-  force_update = var.force_update
-  wait         = var.wait
-  # recreate_pods              = lookup(var.recreate_pods, true)
-  max_history = var.max_history
-  # lint                       = lookup(var.lint, true)
+  name            = var.application_name
+  repository      = var.helm_repository
+  chart           = var.helm_chart
+  version         = var.helm_chart_version
+  namespace       = var.namespace
+  force_update    = var.force_update
+  wait            = var.wait
+  max_history     = var.max_history
   cleanup_on_fail = var.cleanup_on_fail
+  timeout         = var.wait_timeout
+  reuse_values    = var.reuse_values
   # create_namespace           = lookup(var.create_namespace, false)
   # disable_webhooks           = lookup(var.disable_webhooks, false)
   # verify                     = lookup(var.verify, false)
-  # reuse_values               = lookup(var.reuse_values, false)
   # reset_values               = lookup(var.reset_values, false)
   # atomic                     = lookup(var.atomic, false)
   # skip_crds                  = lookup(var.skip_crds, false)
@@ -57,7 +51,8 @@ resource "helm_release" "application" {
   # wait_for_jobs              = lookup(var.wait_for_jobs, false)
   # dependency_update          = lookup(var.dependency_update, false)
   # replace                    = lookup(var.replace, false)
-  timeout = var.wait_timeout
+  # recreate_pods              = lookup(var.recreate_pods, true)
+  # lint                       = lookup(var.lint, true)
 
   values = [
     yamlencode(
@@ -105,10 +100,20 @@ locals {
     : ""
   )
 
+  alb_health_check = {
+    "alb.ingress.kubernetes.io/healthcheck-port"             = var.alb_health_check_port
+    "alb.ingress.kubernetes.io/healthcheck-protocol"         = var.alb_health_check_protocol
+    "alb.ingress.kubernetes.io/healthcheck-path"             = var.alb_health_check_path
+    "alb.ingress.kubernetes.io/healthcheck-interval-seconds" = tostring(var.alb_health_check_interval)
+    "alb.ingress.kubernetes.io/healthcheck-timeout-seconds"  = tostring(var.alb_health_check_timeout)
+    "alb.ingress.kubernetes.io/healthy-threshold-count"      = tostring(var.alb_health_check_healthy_threshold)
+    "alb.ingress.kubernetes.io/success-codes"                = var.alb_health_check_success_codes
+  }
+
   # Assemble a complete map of ingress annotations
   ingress_annotations = merge(
     {
-      "kubernetes.io/ingress.class"      = "alb"
+      #"kubernetes.io/ingress.class"      = "alb"
       "alb.ingress.kubernetes.io/scheme" = var.expose_type == "external" ? "internet-facing" : "internal"
       # We manually construct the list as a string here to avoid the values being converted as string, as opposed to
       # ints
@@ -151,15 +156,20 @@ locals {
 
   helm_chart_input = merge(
     {
-      nameOverride = var.application_name
+      elasticsearchHosts                      = var.es_host
+      elasticsearchCertificateSecret          = var.es_certificate_secret
+      elasticsearchCertificateAuthoritiesFile = var.es_ca_file
+      elasticsearchCredentialSecret           = var.es_master_pass
+      #nameOverride       = var.application_name
+
       serviceAccount = {
         # Create a new service account if service_account_name is not blank and it is not referring to an existing Service
         # Account
-        create = (!var.service_account_exists) && var.service_account_name != ""
+        # create = (!var.service_account_exists) && var.service_account_name != ""
 
-        name        = var.service_account_name
-        namespace   = var.namespace
-        annotations = local.iam_role == "" ? {} : { "eks.amazonaws.com/role-arn" = local.iam_role }
+        # name        = var.service_account_name
+        # namespace   = var.namespace
+        # annotations = local.iam_role == "" ? {} : { "eks.amazonaws.com/role-arn" = local.iam_role }
       }
       service = {
         # When expose_type is cluster-internal, we do not want to associate an Ingress resource, or allow access
@@ -172,26 +182,27 @@ locals {
       }
       ingress = {
         enabled     = true
-        path        = "/*"
-        hostname    = var.domain_name
+        className   = "alb"
         annotations = local.ingress_annotations
-      }
-      auth = {
-        username = var.mq_user
-        password = var.mq_password
-      }
-      persistence = {
-        enabled = true
-        size    = var.disk_size
+        hosts = [
+          {
+            host = var.domain_name,
+            paths : [
+              {
+                path : var.ingress_path
+              }
+            ]
+          }
+        ]
       }
       resources = {
         requests = {
-          memory = var.mq_request_memory,
-          cpu    = var.mq_request_cpu
+          memory = var.request_memory,
+          cpu    = var.request_cpu
         },
         limits = {
-          memory = var.mq_limit_memory,
-          cpu    = var.mq_limit_cpu
+          memory = var.limit_memory,
+          cpu    = var.limit_cpu
         }
       }
     },

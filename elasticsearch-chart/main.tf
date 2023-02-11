@@ -29,26 +29,20 @@ terraform {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "helm_release" "application" {
-  name       = var.application_name
-  repository = var.helm_repository
-  chart      = var.helm_chart
-  version    = var.helm_chart_version
-  namespace  = var.namespace
-  # repository_key_file        = lookup(var.repository_key_file, null)
-  # repository_cert_file       = lookup(var.repository_cert_file, null)
-  # repository_ca_file         = lookup(var.repository_ca_file, null)
-  # repository_username        = lookup(var.repository_username, null)
-  # repository_password        = lookup(var.repository_password, null)
-  force_update = var.force_update
-  wait         = var.wait
-  # recreate_pods              = lookup(var.recreate_pods, true)
-  max_history = var.max_history
-  # lint                       = lookup(var.lint, true)
+  name            = var.application_name
+  repository      = var.helm_repository
+  chart           = var.helm_chart
+  version         = var.helm_chart_version
+  namespace       = var.namespace
+  force_update    = var.force_update
+  wait            = var.wait
+  max_history     = var.max_history
   cleanup_on_fail = var.cleanup_on_fail
+  timeout         = var.wait_timeout
+  reuse_values    = var.reuse_values
   # create_namespace           = lookup(var.create_namespace, false)
   # disable_webhooks           = lookup(var.disable_webhooks, false)
   # verify                     = lookup(var.verify, false)
-  # reuse_values               = lookup(var.reuse_values, false)
   # reset_values               = lookup(var.reset_values, false)
   # atomic                     = lookup(var.atomic, false)
   # skip_crds                  = lookup(var.skip_crds, false)
@@ -57,7 +51,8 @@ resource "helm_release" "application" {
   # wait_for_jobs              = lookup(var.wait_for_jobs, false)
   # dependency_update          = lookup(var.dependency_update, false)
   # replace                    = lookup(var.replace, false)
-  timeout = var.wait_timeout
+  # recreate_pods              = lookup(var.recreate_pods, true)
+  # lint                       = lookup(var.lint, true)
 
   values = [
     yamlencode(
@@ -152,6 +147,11 @@ locals {
   helm_chart_input = merge(
     {
       nameOverride = var.application_name
+      nodeGroup    = var.node_group
+      #roles              = var.elk_node_role
+      replicas           = var.replicas
+      minimumMasterNodes = var.minimum_master_nodes
+
       serviceAccount = {
         # Create a new service account if service_account_name is not blank and it is not referring to an existing Service
         # Account
@@ -170,28 +170,25 @@ locals {
           : "NodePort"
         )
       }
-      ingress = {
-        enabled     = true
-        path        = "/*"
-        hostname    = var.domain_name
-        annotations = local.ingress_annotations
+      volumeClaimTemplate = {
+        resources = {
+          requests = {
+            storage = var.es_storage
+          }
+        }
       }
-      auth = {
-        username = var.mq_user
-        password = var.mq_password
-      }
-      persistence = {
-        enabled = true
-        size    = var.disk_size
+      secret = {
+        enabled  = true
+        password = var.es_password
       }
       resources = {
         requests = {
-          memory = var.mq_request_memory,
-          cpu    = var.mq_request_cpu
+          memory = var.request_memory,
+          cpu    = var.request_cpu
         },
         limits = {
-          memory = var.mq_limit_memory,
-          cpu    = var.mq_limit_cpu
+          memory = var.limit_memory,
+          cpu    = var.limit_cpu
         }
       }
     },

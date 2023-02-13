@@ -256,8 +256,12 @@ master:
   ## @param master.resources.requests The requested resources for the Redis&reg; master containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    requests:
+      cpu: "1000m"
+      memory: "4Gi"
+    limits:
+      cpu: "1000m"
+      memory: "4Gi"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param master.podSecurityContext.enabled Enabled Redis&reg; master pods' Security Context
@@ -350,7 +354,11 @@ master:
   ## @param master.tolerations Tolerations for Redis&reg; master pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
-  tolerations: []
+  tolerations:
+    - key: "novo"
+      operator: "Equal"
+      effect: "NoSchedule"
+      value: "memory-optimized"
   ## @param master.topologySpreadConstraints Spread Constraints for Redis&reg; master pod assignment
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
   ## E.g.
@@ -611,7 +619,7 @@ replica:
   ## @param replica.startupProbe.successThreshold Success threshold for startupProbe
   ##
   startupProbe:
-    enabled: true
+    enabled: false
     initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
@@ -659,17 +667,12 @@ replica:
   ## @param replica.resources.limits The resources limits for the Redis&reg; replicas containers
   ## @param replica.resources.requests The requested resources for the Redis&reg; replicas containers
   ##
-  resources:
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    limits: {}
-    #   cpu: 250m
-    #   memory: 256Mi
-    requests: {}
-    #   cpu: 250m
-    #   memory: 256Mi
+  requests:
+    cpu: "1000m"
+    memory: "4Gi"
+  limits:
+    cpu: "1000m"
+    memory: "4Gi"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param replica.podSecurityContext.enabled Enabled Redis&reg; replicas pods' Security Context
@@ -762,13 +765,11 @@ replica:
   ## @param replica.tolerations Tolerations for Redis&reg; replicas pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
-  tolerations: [{ 
-      key = "novo", 
-      operator = "Equal", 
-      effect = "NoSchedule", 
-      value = "application" 
-    }
-  ]
+  tolerations:
+    - key: "novo"
+      operator: "Equal"
+      effect: "NoSchedule"
+      value: "memory-optimized"
   ## @param replica.topologySpreadConstraints Spread Constraints for Redis&reg; replicas pod assignment
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
   ## E.g.
@@ -1169,9 +1170,12 @@ sentinel:
   ## @param sentinel.resources.limits The resources limits for the Redis&reg; Sentinel containers
   ## @param sentinel.resources.requests The requested resources for the Redis&reg; Sentinel containers
   ##
-  resources:
-    limits: {}
-    requests: {}
+  requests:
+    cpu: "1000m"
+    memory: "4Gi"
+  limits:
+    cpu: "1000m"
+    memory: "4Gi"
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param sentinel.containerSecurityContext.enabled Enabled Redis&reg; Sentinel containers' Security Context
@@ -1516,9 +1520,12 @@ metrics:
   ## @param metrics.resources.limits The resources limits for the Redis&reg; exporter container
   ## @param metrics.resources.requests The requested resources for the Redis&reg; exporter container
   ##
-  resources:
-    limits: {}
-    requests: {}
+  requests:
+    cpu: "1000m"
+    memory: "4Gi"
+  limits:
+    cpu: "1000m"
+    memory: "4Gi"
   ## @param metrics.podLabels Extra labels for Redis&reg; exporter pods
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   ##
@@ -1680,9 +1687,12 @@ volumePermissions:
   ## @param volumePermissions.resources.limits The resources limits for the init container
   ## @param volumePermissions.resources.requests The requested resources for the init container
   ##
-  resources:
-    limits: {}
-    requests: {}
+  requests:
+    cpu: "1000m"
+    memory: "4Gi"
+  limits:
+    cpu: "1000m"
+    memory: "4Gi"
   ## Init container Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param volumePermissions.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
@@ -1734,9 +1744,12 @@ sysctl:
   ## @param sysctl.resources.limits The resources limits for the init container
   ## @param sysctl.resources.requests The requested resources for the init container
   ##
-  resources:
-    limits: {}
-    requests: {}
+  requests:
+    cpu: "1000m"
+    memory: "4Gi"
+  limits:
+    cpu: "1000m"
+    memory: "4Gi"
 
 ## @section useExternalDNS Parameters
 ##

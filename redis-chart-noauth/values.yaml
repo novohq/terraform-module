@@ -258,10 +258,10 @@ master:
   resources:
     requests:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
     limits:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param master.podSecurityContext.enabled Enabled Redis&reg; master pods' Security Context
@@ -670,10 +670,10 @@ replica:
   resources:
     requests:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
     limits:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
  ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param replica.podSecurityContext.enabled Enabled Redis&reg; replicas pods' Security Context
@@ -1174,10 +1174,10 @@ sentinel:
   resources:
     requests:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
     limits:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param sentinel.containerSecurityContext.enabled Enabled Redis&reg; Sentinel containers' Security Context
@@ -1525,10 +1525,10 @@ metrics:
   resources:
     requests:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
     limits:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
   ## @param metrics.podLabels Extra labels for Redis&reg; exporter pods
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   ##
@@ -1693,10 +1693,10 @@ volumePermissions:
   resources:
     requests:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
     limits:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
   ## Init container Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param volumePermissions.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
@@ -1751,10 +1751,10 @@ sysctl:
   resources:
     requests:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
     limits:
       cpu: "1000m"
-      memory: "4Gi"
+      memory: "2Gi"
 ## @section useExternalDNS Parameters
 ##
 ## @param useExternalDNS.enabled Enable various syntax that would enable external-dns to work.  Note this requires a working installation of `external-dns` to be usable.

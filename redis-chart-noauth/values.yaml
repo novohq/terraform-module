@@ -235,7 +235,7 @@ master:
   ## @param master.readinessProbe.successThreshold Success threshold for readinessProbe
   ##
   readinessProbe:
-    enabled: true
+    enabled: false
     initialDelaySeconds: 20
     periodSeconds: 5
     timeoutSeconds: 1
@@ -647,7 +647,7 @@ replica:
   ## @param replica.readinessProbe.successThreshold Success threshold for readinessProbe
   ##
   readinessProbe:
-    enabled: true
+    enabled: false
     initialDelaySeconds: 20
     periodSeconds: 5
     timeoutSeconds: 1
@@ -667,13 +667,14 @@ replica:
   ## @param replica.resources.limits The resources limits for the Redis&reg; replicas containers
   ## @param replica.resources.requests The requested resources for the Redis&reg; replicas containers
   ##
-  requests:
-    cpu: "1000m"
-    memory: "4Gi"
-  limits:
-    cpu: "1000m"
-    memory: "4Gi"
-  ## Configure Pods Security Context
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "4Gi"
+    limits:
+      cpu: "1000m"
+      memory: "4Gi"
+ ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param replica.podSecurityContext.enabled Enabled Redis&reg; replicas pods' Security Context
   ## @param replica.podSecurityContext.fsGroup Set Redis&reg; replicas pod's Security Context fsGroup
@@ -1083,7 +1084,7 @@ sentinel:
   ## @param sentinel.startupProbe.successThreshold Success threshold for startupProbe
   ##
   startupProbe:
-    enabled: true
+    enabled: false
     initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
@@ -1111,7 +1112,7 @@ sentinel:
   ## @param sentinel.readinessProbe.successThreshold Success threshold for readinessProbe
   ##
   readinessProbe:
-    enabled: true
+    enabled: false
     initialDelaySeconds: 20
     periodSeconds: 5
     timeoutSeconds: 1
@@ -1170,12 +1171,13 @@ sentinel:
   ## @param sentinel.resources.limits The resources limits for the Redis&reg; Sentinel containers
   ## @param sentinel.resources.requests The requested resources for the Redis&reg; Sentinel containers
   ##
-  requests:
-    cpu: "1000m"
-    memory: "4Gi"
-  limits:
-    cpu: "1000m"
-    memory: "4Gi"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "4Gi"
+    limits:
+      cpu: "1000m"
+      memory: "4Gi"
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param sentinel.containerSecurityContext.enabled Enabled Redis&reg; Sentinel containers' Security Context
@@ -1452,7 +1454,7 @@ metrics:
   ## @param metrics.livenessProbe.successThreshold Success threshold for livenessProbe
   ##
   livenessProbe:
-    enabled: true
+    enabled: false
     initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
@@ -1466,7 +1468,7 @@ metrics:
   ## @param metrics.readinessProbe.successThreshold Success threshold for readinessProbe
   ##
   readinessProbe:
-    enabled: true
+    enabled: false
     initialDelaySeconds: 5
     periodSeconds: 10
     timeoutSeconds: 1
@@ -1520,12 +1522,13 @@ metrics:
   ## @param metrics.resources.limits The resources limits for the Redis&reg; exporter container
   ## @param metrics.resources.requests The requested resources for the Redis&reg; exporter container
   ##
-  requests:
-    cpu: "1000m"
-    memory: "4Gi"
-  limits:
-    cpu: "1000m"
-    memory: "4Gi"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "4Gi"
+    limits:
+      cpu: "1000m"
+      memory: "4Gi"
   ## @param metrics.podLabels Extra labels for Redis&reg; exporter pods
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   ##
@@ -1687,12 +1690,13 @@ volumePermissions:
   ## @param volumePermissions.resources.limits The resources limits for the init container
   ## @param volumePermissions.resources.requests The requested resources for the init container
   ##
-  requests:
-    cpu: "1000m"
-    memory: "4Gi"
-  limits:
-    cpu: "1000m"
-    memory: "4Gi"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "4Gi"
+    limits:
+      cpu: "1000m"
+      memory: "4Gi"
   ## Init container Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param volumePermissions.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
@@ -1744,13 +1748,13 @@ sysctl:
   ## @param sysctl.resources.limits The resources limits for the init container
   ## @param sysctl.resources.requests The requested resources for the init container
   ##
-  requests:
-    cpu: "1000m"
-    memory: "4Gi"
-  limits:
-    cpu: "1000m"
-    memory: "4Gi"
-
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "4Gi"
+    limits:
+      cpu: "1000m"
+      memory: "4Gi"
 ## @section useExternalDNS Parameters
 ##
 ## @param useExternalDNS.enabled Enable various syntax that would enable external-dns to work.  Note this requires a working installation of `external-dns` to be usable.

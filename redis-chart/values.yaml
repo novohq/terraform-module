@@ -355,7 +355,7 @@ master:
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations:
-    - key: "novo"
+    - key: "application"
       operator: "Equal"
       effect: "NoSchedule"
       value: "memory-optimized"
@@ -767,7 +767,7 @@ replica:
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations:
-    - key: "novo"
+    - key: "application"
       operator: "Equal"
       effect: "NoSchedule"
       value: "memory-optimized"

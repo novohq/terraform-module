@@ -355,10 +355,10 @@ master:
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations:
-    - key: "application"
+    - key: "novo"
       operator: "Equal"
       effect: "NoSchedule"
-      value: "memory-optimized"
+      value: "redis"
   ## @param master.topologySpreadConstraints Spread Constraints for Redis&reg; master pod assignment
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
   ## E.g.
@@ -767,10 +767,10 @@ replica:
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations:
-    - key: "application"
+    - key: "novo"
       operator: "Equal"
       effect: "NoSchedule"
-      value: "memory-optimized"
+      value: "redis"
   ## @param replica.topologySpreadConstraints Spread Constraints for Redis&reg; replicas pod assignment
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
   ## E.g.

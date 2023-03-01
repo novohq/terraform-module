@@ -1,0 +1,3 @@
+{
+    "kibana.yml": "xpack.security.encryptionKey: ${KIBANA_ENCRYPTION_KEY}\nxpack.encryptedSavedObjects.encryptionKey: ${KIBANA_OBJECT_ENCRYPTION_KEY}\n"
+}

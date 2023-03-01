@@ -33,8 +33,8 @@ resource "helm_release" "application" {
   repository      = var.helm_repository
   chart           = var.helm_chart
   version         = var.helm_chart_version
-  namespace       = var.namespace
   force_update    = var.force_update
+  namespace       = var.namespace
   wait            = var.wait
   max_history     = var.max_history
   cleanup_on_fail = var.cleanup_on_fail
@@ -55,12 +55,7 @@ resource "helm_release" "application" {
   # lint                       = lookup(var.lint, true)
 
   values = [
-    yamlencode(
-      merge(
-        local.helm_chart_input,
-        var.override_chart_inputs,
-      ),
-    ),
+    file(var.filebeat_values_file)
   ]
   depends_on = [null_resource.sleep_for_resource_culling]
 }
@@ -99,136 +94,6 @@ locals {
     )
     : ""
   )
-
-  alb_health_check = {
-    "alb.ingress.kubernetes.io/healthcheck-port"             = var.alb_health_check_port
-    "alb.ingress.kubernetes.io/healthcheck-protocol"         = var.alb_health_check_protocol
-    "alb.ingress.kubernetes.io/healthcheck-path"             = var.alb_health_check_path
-    "alb.ingress.kubernetes.io/healthcheck-interval-seconds" = tostring(var.alb_health_check_interval)
-    "alb.ingress.kubernetes.io/healthcheck-timeout-seconds"  = tostring(var.alb_health_check_timeout)
-    "alb.ingress.kubernetes.io/healthy-threshold-count"      = tostring(var.alb_health_check_healthy_threshold)
-    "alb.ingress.kubernetes.io/success-codes"                = var.alb_health_check_success_codes
-  }
-
-  # Assemble a complete map of ingress annotations
-  ingress_annotations = merge(
-    {
-      #"kubernetes.io/ingress.class"      = "alb"
-      "alb.ingress.kubernetes.io/scheme" = var.expose_type == "external" ? "internet-facing" : "internal"
-      # We manually construct the list as a string here to avoid the values being converted as string, as opposed to
-      # ints
-      "alb.ingress.kubernetes.io/listen-ports"     = "[${join(",", local.ingress_listener_protocol_ports)}]"
-      "alb.ingress.kubernetes.io/backend-protocol" = var.ingress_backend_protocol
-    },
-    (
-      var.ingress_group != null
-      ? {
-        "alb.ingress.kubernetes.io/group.name" = var.ingress_group.name
-      }
-      : {}
-    ),
-    (
-      # NOTE: can't use && because Terraform processes the conditional in one pass, and boolean operators are not short
-      # circuit.
-      var.ingress_group != null
-      ? (
-        var.ingress_group.priority != null
-        ? {
-          "alb.ingress.kubernetes.io/group.order" = tostring(var.ingress_group.priority)
-        }
-        : {}
-      )
-      : {}
-    ),
-    (
-      var.domain_propagation_ttl != null
-      ? {
-        "external-dns.alpha.kubernetes.io/ttl" = tostring(var.domain_propagation_ttl)
-      }
-      : {}
-    ),
-    {
-      "alb.ingress.kubernetes.io/certificate-arn" = join(",", var.alb_acm_certificate_arns),
-      "alb.ingress.kubernetes.io/target-type"     = var.ingress_target_type
-    },
-    var.ingress_annotations,
-  )
-
-  helm_chart_input = merge(
-    {
-      elasticsearchHosts                      = var.es_host
-      elasticsearchCertificateSecret          = var.es_certificate_secret
-      elasticsearchCertificateAuthoritiesFile = var.es_ca_file
-      elasticsearchCredentialSecret           = var.es_master_pass
-      #nameOverride       = var.application_name
-
-      serviceAccount = {
-        # Create a new service account if service_account_name is not blank and it is not referring to an existing Service
-        # Account
-        # create = (!var.service_account_exists) && var.service_account_name != ""
-
-        # name        = var.service_account_name
-        # namespace   = var.namespace
-        # annotations = local.iam_role == "" ? {} : { "eks.amazonaws.com/role-arn" = local.iam_role }
-      }
-      service = {
-        # When expose_type is cluster-internal, we do not want to associate an Ingress resource, or allow access
-        # externally from the cluster, so we use ClusterIP service type.
-        type = (
-          var.expose_type == "cluster-internal" || var.expose_type == "none"
-          ? "ClusterIP"
-          : "NodePort"
-        )
-      }
-      ingress = {
-        enabled     = true
-        className   = "alb"
-        annotations = local.ingress_annotations
-        hosts = [
-          {
-            host = var.domain_name,
-            paths : [
-              {
-                path : var.ingress_path
-              }
-            ]
-          }
-        ]
-      }
-      extraEnvs = [
-      {
-        "name": "NODE_OPTIONS",
-        "value": "--max-old-space-size=1800"
-      },
-      {
-      "name": "KIBANA_ENCRYPTION_KEY",
-        "valueFrom": {
-          "secretKeyRef": {
-            "name": "kibana",
-            "key": "encryptionkey"
-          }
-        }
-      }]
-      kibanaConfig = jsondecode(file("kibana.json"))
-      resources = {
-        requests = {
-          memory = var.request_memory,
-          cpu    = var.request_cpu
-        },
-        limits = {
-          memory = var.limit_memory,
-          cpu    = var.limit_cpu
-        }
-      }
-    },
-  )
-  # We use interpolate a string here to construct a list of protocol port mappings for the listener, that can then be injected
-  # into the input values. We do this instead of directly rendering the list because terraform does some type conversions
-  # in the yaml encode process.
-  ingress_listener_protocol_ports = [
-    for protocol_ports in var.ingress_listener_protocol_ports :
-    "{\"${protocol_ports["protocol"]}\": ${protocol_ports["port"]}}"
-  ]
 }
 # ---------------------------------------------------------------------------------------------------------------------
 # SET UP IAM ROLE FOR SERVICE ACCOUNT
@@ -295,16 +160,4 @@ data "aws_iam_role" "existing_role" {
   count = var.iam_role_exists ? 1 : 0
 
   name = var.iam_role_name
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# EMIT HELM CHART VALUES TO DISK FOR DEBUGGING
-# ---------------------------------------------------------------------------------------------------------------------
-
-resource "local_file" "debug_values" {
-  count = var.values_file_path != null ? 1 : 0
-
-  content         = yamlencode(local.helm_chart_input)
-  filename        = var.values_file_path
-  file_permission = "0644"
 }

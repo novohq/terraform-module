@@ -22,6 +22,16 @@ daemonset:
         secretKeyRef:
           name: elasticsearch-master-credentials
           key: password
+    - name: "AWS_SECRET_ACCESS_KEY"
+      valueFrom:
+        secretKeyRef:
+          name: aws-access-keys
+          key: secret_access_key
+    - name: "AWS_ACCESS_KEY"
+      valueFrom:
+        secretKeyRef:
+          name: aws-access-keys
+          key: access_key_id
   #  - name: MY_ENVIRONMENT_VAR
   #    value: the_value_goes_here
   extraVolumes: []
@@ -88,6 +98,15 @@ daemonset:
         process.include_top_n:
           by_cpu: 5
           by_memory: 5
+      - module: aws
+        period: 300s
+        metricsets:
+          - ec2
+          - elb
+          - rds
+          - usage
+        access_key_id: '${AWS_ACCESS_KEY}'
+        secret_access_key: '${AWS_SECRET_ACCESS_KEY}'
       - module: system
         period: 1m
         metricsets:
@@ -159,6 +178,16 @@ deployment:
         secretKeyRef:
           name: elasticsearch-master-credentials
           key: password
+    - name: "AWS_SECRET_ACCESS_KEY"
+      valueFrom:
+        secretKeyRef:
+          name: aws-access-keys
+          key: secret_access_key
+    - name: "AWS_ACCESS_KEY"
+      valueFrom:
+        secretKeyRef:
+          name: aws-access-keys
+          key: access_key_id
   #  - name: MY_ENVIRONMENT_VAR
   #    value: the_value_goes_here
   # Allows you to add any config files in /usr/share/metricbeat

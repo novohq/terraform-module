@@ -201,10 +201,28 @@ locals {
         "value": "--max-old-space-size=1800"
       },
       {
-      "name": "KIBANA_ENCRYPTION_KEY",
+      "name": "KIBANA_OBJECT_ENCRYPTION_KEY",
         "valueFrom": {
           "secretKeyRef": {
-            "name": "kibana",
+            "name": "kibana-savedobject-key",
+            "key": "encryptionkey"
+          }
+        }
+      },
+      {
+      "name": "KIBANA_REPORTING_ENCRYPTION_KEY",
+        "valueFrom": {
+          "secretKeyRef": {
+            "name": "kibana-reporting-key",
+            "key": "encryptionkey"
+          }
+        }
+      },
+      {
+      "name": "KIBANA_SECURITY_ENCRYPTION_KEY",
+        "valueFrom": {
+          "secretKeyRef": {
+            "name": "kibana-security-key",
             "key": "encryptionkey"
           }
         }

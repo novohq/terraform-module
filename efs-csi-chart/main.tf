@@ -55,12 +55,7 @@ resource "helm_release" "application" {
   # lint                       = lookup(var.lint, true)
 
   values = [
-    yamlencode(
-      merge(
-        local.helm_chart_input,
-        var.override_chart_inputs,
-      ),
-    ),
+    file(var.efs_values_file)
   ]
   depends_on = [null_resource.sleep_for_resource_culling]
 }

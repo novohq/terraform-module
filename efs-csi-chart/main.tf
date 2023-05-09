@@ -54,9 +54,9 @@ resource "helm_release" "application" {
   # recreate_pods              = lookup(var.recreate_pods, true)
   # lint                       = lookup(var.lint, true)
 
-  values = [
-    file(var.efs_values_file)
-  ]
+  values = [templatefile("values.yaml", {
+    efs-id = var.efs_id
+  })]
   depends_on = [null_resource.sleep_for_resource_culling]
 }
 

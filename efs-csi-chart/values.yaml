@@ -122,8 +122,9 @@ node:
   # Specifies whether a service account should be created
   serviceAccount:
     create: true
-    name: efs-csi-node-sa
-    annotations: {}
+    name: efs-csi-controller-sa
+    annotations:
+      eks.amazonaws.com/role-arn: ${irsa} #local.iam_role_arn
     ## Enable if EKS IAM for SA is used
     #  eks.amazonaws.com/role-arn: arn:aws:iam::111122223333:role/efs-csi-role
   healthPort: 9809

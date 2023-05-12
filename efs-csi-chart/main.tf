@@ -56,6 +56,7 @@ resource "helm_release" "application" {
 
   values = [templatefile("values.yaml", {
     efs-id = var.efs_id
+    irsa   = format("arn:aws:iam::%s:role/%s", data.aws_caller_identity.current.account_id, "AmazonEKS_EFS_CSI_DriverRole")
   })]
   depends_on = [null_resource.sleep_for_resource_culling]
 }

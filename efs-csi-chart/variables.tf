@@ -354,3 +354,9 @@ variable "efs_values_file" {
   type        = string
   default     = "values.yaml"
 }
+
+variable "efs_id" {
+  description = "File system "
+  type        = string
+  default     = ""
+}

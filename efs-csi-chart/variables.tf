@@ -360,3 +360,9 @@ variable "efs_id" {
   type        = string
   default     = ""
 }
+
+variable "efs_sa" {
+  description = "File system "
+  type        = string
+  default     = ""
+}

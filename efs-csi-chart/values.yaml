@@ -124,7 +124,7 @@ node:
     create: true
     name: efs-csi-controller-sa
     annotations:
-      eks.amazonaws.com/role-arn: ${irsa} #local.iam_role_arn
+      eks.amazonaws.com/role-arn: ${efs-sa} #local.iam_role_arn
     ## Enable if EKS IAM for SA is used
     #  eks.amazonaws.com/role-arn: arn:aws:iam::111122223333:role/efs-csi-role
   healthPort: 9809

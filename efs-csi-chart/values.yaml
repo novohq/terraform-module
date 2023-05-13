@@ -123,7 +123,7 @@ node:
   # Specifies whether a service account should be created
   serviceAccount:
     create: true
-    name: efs-csi-controller-sa
+    name: efs-csi-node-sa
     annotations:
       eks.amazonaws.com/role-arn: ${efs-sa} #local.iam_role_arn
     ## Enable if EKS IAM for SA is used

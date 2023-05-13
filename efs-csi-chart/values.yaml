@@ -75,7 +75,8 @@ controller:
   serviceAccount:
     create: true
     name: efs-csi-controller-sa
-    annotations: {}
+    annotations:
+      eks.amazonaws.com/role-arn: ${efs-sa}
     ## Enable if EKS IAM for SA is used
     #  eks.amazonaws.com/role-arn: arn:aws:iam::111122223333:role/efs-csi-role
   healthPort: 9909

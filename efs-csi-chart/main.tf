@@ -56,6 +56,7 @@ resource "helm_release" "application" {
 
   values = [templatefile("values.yaml", {
     efs-id = var.efs_id
+    efs-sa = var.efs_sa
   })]
   depends_on = [null_resource.sleep_for_resource_culling]
 }

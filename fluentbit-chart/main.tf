@@ -129,7 +129,7 @@ module "s3_bucket" {
   }
 
   variable "lifecycle_rules" {
-  {
+    {
      deep_archive = {
        prefix  = "/"
        enabled = true
@@ -142,10 +142,10 @@ module "s3_bucket" {
        }
   
        noncurrent_version_expiration = 90
-     }
+      }
+    }
   }
 }
-
 
 # ---------------------------------------------------------------------------------------------------------------------
 # SET UP IAM ROLE FOR SERVICE ACCOUNT

@@ -105,9 +105,9 @@ module "s3_bucket" {
   primary_bucket        = var.bucket_name
 
   # Ownership
-  bucket_ownership                = "BucketOwnerEnforced"
-  access_logging_bucket_ownership = "ObjectWriter"
-  replica_bucket_ownership        = "BucketOwnerEnforced"
+  # bucket_ownership                = "BucketOwnerEnforced"
+  # access_logging_bucket_ownership = "ObjectWriter"
+  # replica_bucket_ownership        = "BucketOwnerEnforced"
 
   # Grant read and write access to the current IAM user running this module
   bucket_policy_statements = {
@@ -124,23 +124,23 @@ module "s3_bucket" {
     }
   }
 
-  variable "lifecycle_rules" {
-    {
-     deep_archive = {
-       prefix  = "/"
-       enabled = true
+  # variable "lifecycle_rules" {
+  #   {
+  #    deep_archive = {
+  #      prefix  = "/"
+  #      enabled = true
   
-       transition = {
-         ToGlacier = {
-           days          = 20
-           storage_class = "DEEP_ARCHIVE"
-         }
-       }
+  #      transition = {
+  #        ToGlacier = {
+  #          days          = 20
+  #          storage_class = "DEEP_ARCHIVE"
+  #        }
+  #      }
   
-       noncurrent_version_expiration = 90
-      }
-    }
-  }
+  #      noncurrent_version_expiration = 90
+  #     }
+  #   }
+  # }
 }
 
 # ---------------------------------------------------------------------------------------------------------------------

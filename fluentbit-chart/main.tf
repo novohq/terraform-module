@@ -100,7 +100,7 @@ locals {
 # Set up S3 bucket for logging
 #---------------------------------------------------------------------------------------------------------------------
 module "s3_bucket" {
-  source = "git::git@github.com/gruntwork-io/terraform-aws-service-catalog.git//modules/data-stores/s3-bucket?ref=v0.102.7"
+  source = "git::git@github.com/gruntwork-io/terraform-aws-service-catalog.git//modules/data-stores/s3-bucket?ref=v1.0.8"
 
   primary_bucket        = var.primary_bucket
   access_logging_bucket = var.access_logging_bucket

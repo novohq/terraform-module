@@ -364,3 +364,8 @@ variable "region" {
   type        = string
   default     = ""
 }
+variable "account_id" {
+  description = "account"
+  type        = string
+  default     = ""
+}

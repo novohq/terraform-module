@@ -119,7 +119,7 @@ module "s3_bucket" {
         "s3:Put*"
       ]
       principals = {
-        AWS = ["arn:aws:iam::${local.account_ids[local.account_name]}:root"]
+        AWS = ["arn:aws:iam::${var.account_id}:root"]
       }
     }
   }

@@ -102,16 +102,12 @@ locals {
 module "s3_bucket" {
   source = "git::git@github.com:gruntwork-io/terraform-aws-service-catalog.git//modules/data-stores/s3-bucket?ref=v0.104.6"
 
-  primary_bucket        = var.primary_bucket
-  access_logging_bucket = var.access_logging_bucket
-  replica_region        = var.replica_aws_region
+  primary_bucket        = var.bucket_name
 
   # Ownership
   bucket_ownership                = "BucketOwnerEnforced"
   access_logging_bucket_ownership = "ObjectWriter"
   replica_bucket_ownership        = "BucketOwnerEnforced"
-
-  enable_versioning = var.enable_versioning
 
   # Grant read and write access to the current IAM user running this module
   bucket_policy_statements = {

@@ -195,6 +195,13 @@ resource "aws_iam_role_policy_attachment" "service_policy" {
 data "aws_iam_policy_document" "service_policy" {
   count = var.iam_role_name != "" ? 1 : 0
 
+    content {
+      sid       = "s3permissions"
+      effect    = "Allow"
+      actions   = "s3:*"
+      resources = ["${module.s3_bucket.primary_bucket_arn}","${module.s3_bucket.primary_bucket_arn}/*"]
+    }
+
   dynamic "statement" {
     for_each = var.iam_policy == null ? {} : var.iam_policy
 

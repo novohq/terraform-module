@@ -7,7 +7,7 @@ kind: DaemonSet
 replicaCount: 1
 
 image:
-  repository: cr.fluentbit.io/fluent/fluent-bit
+  repository: public.ecr.aws/aws-observability/aws-for-fluent-bit:stable
   # Overrides the image tag whose default is {{ .Chart.AppVersion }}
   tag: ""
   pullPolicy: Always
@@ -26,7 +26,7 @@ fullnameOverride: ""
 serviceAccount:
   create: true
   annotations: {}
-  name: fluent-bit
+  name: fluentbit
 
 rbac:
   create: true
@@ -358,7 +358,6 @@ config:
   service: |
     [SERVICE]
         Parsers_File  parsers.conf
-        Streams_File  streams.conf
   inputs: |
     [INPUT]
         Name              tail
@@ -368,8 +367,8 @@ config:
         Exclude_Path      /var/log/containers/*_kube-system_*.log,/var/log/containers/*_logging_*.log
         Parser            docker
         DB                /var/log/flb_kube.db
-        Mem_Buf_Limit     256MB
-        DB.locking        true
+        Mem_Buf_Limit     5MB
+        Refresh_Interval  10
   filters: |
     [FILTER]
         Name parser
@@ -381,13 +380,12 @@ config:
     [OUTPUT]
         Name s3
         Match *
-        bucket ${AWS_BUCKET}
-        region ${AWS_REGION}
+        bucket novo-dev-logging-persistent-storage
+        region us-east-1
         store_dir /var/log/fluentbit
         total_file_size 10M
         upload_timeout 3m
         s3_key_format /$TAG[1]/$TAG[3]/%Y/%m/%d/
-        s3_key_format_tag_delimiters .
 
   upstream: {}
 

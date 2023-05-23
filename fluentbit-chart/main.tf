@@ -110,10 +110,6 @@ locals {
     }
     filter_and = {}
     id         = "nofilter"
-    noncurrent_version_expiration = {
-      newer_noncurrent_versions = 2
-      noncurrent_days           = 30
-    }
     abort_incomplete_multipart_upload_days = 1 # number
 
     filter_and = null

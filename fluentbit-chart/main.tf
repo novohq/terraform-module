@@ -123,26 +123,13 @@ locals {
       storage_class = "DEEP_ARCHIVE" # string/enum, one of GLACIER, STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING, DEEP_ARCHIVE, GLACIER_IR.
       }
     ]
-    noncurrent_version_transition = [{
-      newer_noncurrent_versions = 3            # integer >= 0
-      noncurrent_days           = 30           # integer >= 0
-      storage_class             = "DEEP_ARCHIVE" # string/enum, one of GLACIER, STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING, DEEP_ARCHIVE, GLACIER_IR.
-    }]
   }]
 }
 
 module "s3_bucket" {
-  source = "cloudposse/s3-bucket/aws"
-  # Cloud Posse recommends pinning every module to a specific version
-  # version = "x.x.x"
-  bucket_name              = var.bucket_name
-  s3_object_ownership      = "BucketOwnerEnforced"
-  enabled                  = true
-  user_enabled             = false
-  versioning_enabled       = true
-  lifecycle_configuration_rules = local.lifecycle_configuration_rules
+  source = "cloudposse/s3-bucket/aws?ref=v3.1.1"
 
-  allowed_bucket_actions = [
+  privileged_principal_actions = [
     "s3:PutObject",
     "s3:PutObjectAcl",
     "s3:GetObject",
@@ -152,6 +139,18 @@ module "s3_bucket" {
     "s3:GetBucketLocation",
     "s3:AbortMultipartUpload"
   ]
+  privileged_principal_arns      = [{"arn:aws:iam::${var.account_id}:root" = [""]}]
+  
+
+
+  bucket_name              = var.bucket_name
+  s3_object_ownership      = "BucketOwnerEnforced"
+  enabled                  = true
+  user_enabled             = false
+  versioning_enabled       = true
+  lifecycle_configuration_rules = local.lifecycle_configuration_rules
+
+
 }
 
 # # module "s3_bucket" {

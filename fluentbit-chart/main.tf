@@ -99,7 +99,7 @@ locals {
       days = 5000 # integer > 0
     }
     noncurrent_version_expiration = {
-      noncurrent_days           = 30 # integer >= 0
+      noncurrent_days           = 50 # integer >= 0
     }
     transition = [{
       days          = 20            # integer >= 0

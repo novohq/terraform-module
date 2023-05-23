@@ -158,90 +158,13 @@ module "s3_bucket" {
 
 }
 
-# # module "s3_bucket" {
-# #   source = "git::git@github.com:gruntwork-io/terraform-aws-service-catalog.git//modules/data-stores/s3-bucket?ref=v0.104.6"
-
-# #   primary_bucket        = var.bucket_name
-# #   bucket_policy_statements = {
-# #     AllowCurrentUserReadWriteAccess = {
-# #       effect = "Allow"
-# #       actions = [
-# #         "s3:Get*",
-# #         "s3:List*",
-# #         "s3:Put*"
-# #       ]
-# #       principals = {
-# #         AWS = ["arn:aws:iam::${var.account_id}:root"]
-# #       }
-# #     }
-# #   }
-# # }
 # ---------------------------------------------------------------------------------------------------------------------
-# SET UP IAM ROLE FOR SERVICE ACCOUNT
-# Set up IRSA if a service account and IAM role are configured.
+# SET UP Service account and IAM role attachement using EKSCTL
+# eksctl create iamserviceaccount \                                                                                                                                                                                                                                                                 ✱
+#     --name fluentbit \
+#     --namespace logging \
+#     --cluster novo-dev \
+#     --attach-policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess \
+#     --approve --override-existing-serviceaccounts
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "aws_iam_role" "new_role" {
-  count = var.iam_role_name != "" && var.iam_role_exists == false ? 1 : 0
-
-  name               = var.iam_role_name
-  assume_role_policy = module.service_account_assume_role_policy.assume_role_policy_json
-}
-
-
-
-
-module "service_account_assume_role_policy" {
-  source = "git::git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-iam-role-assume-role-policy-for-service-account?ref=v0.56.1"
-
-  eks_openid_connect_provider_arn = var.eks_iam_role_for_service_accounts_config.openid_connect_provider_arn
-  eks_openid_connect_provider_url = var.eks_iam_role_for_service_accounts_config.openid_connect_provider_url
-  namespaces                      = []
-  service_accounts = [{
-    name      = var.service_account_name
-    namespace = var.namespace
-  }]
-}
-
-resource "aws_iam_role_policy" "service_policy" {
-  count = var.iam_role_name != "" && var.iam_role_exists == false && local.use_inline_policies ? 1 : 0
-
-  name   = "${var.iam_role_name}Policy"
-  role   = var.iam_role_name != "" && var.iam_role_exists == false ? aws_iam_role.new_role[0].id : data.aws_iam_role.existing_role[0].id
-  policy = data.aws_iam_policy_document.service_policy[0].json
-}
-
-resource "aws_iam_policy" "service_policy" {
-  count = var.iam_role_name != "" && var.iam_role_exists == false && var.use_managed_iam_policies ? 1 : 0
-
-  name_prefix = "${var.iam_role_name}-policy"
-  policy      = data.aws_iam_policy_document.service_policy[0].json
-}
-
-resource "aws_iam_role_policy_attachment" "service_policy" {
-  count = var.iam_role_name != "" && var.iam_role_exists == false && var.use_managed_iam_policies ? 1 : 0
-
-  role       = var.iam_role_name != "" && var.iam_role_exists == false ? aws_iam_role.new_role[0].id : data.aws_iam_role.existing_role[0].id
-  policy_arn = aws_iam_policy.service_policy[0].arn
-}
-
-data "aws_iam_policy_document" "service_policy" {
-  count = var.iam_role_name != "" ? 1 : 0
-
-  dynamic "statement" {
-    for_each = var.iam_policy == null ? {} : var.iam_policy
-
-    content {
-      sid       = statement.key
-      effect    = statement.value.effect
-      actions   = statement.value.actions
-      resources = statement.value.resources
-    }
-  }
-}
-
-data "aws_iam_role" "existing_role" {
-  count = var.iam_role_exists ? 1 : 0
-
-  name = var.iam_role_name
-}

@@ -99,50 +99,69 @@ locals {
 #---------------------------------------------------------------------------------------------------------------------
 # Set up S3 bucket for logging
 #---------------------------------------------------------------------------------------------------------------------
-module "s3_bucket" {
-  source = "git::git@github.com:gruntwork-io/terraform-aws-service-catalog.git//modules/data-stores/s3-bucket?ref=v0.104.6"
+locals {
+  lifecycle_configuration_rules = [{
+    enabled = true # bool
+    id      = "v2rule"
 
-  primary_bucket        = var.bucket_name
+    abort_incomplete_multipart_upload_days = 1 # number
 
-  # Ownership
-  # bucket_ownership                = "BucketOwnerEnforced"
-  # access_logging_bucket_ownership = "ObjectWriter"
-  # replica_bucket_ownership        = "BucketOwnerEnforced"
+    filter_and = null
 
-  # Grant read and write access to the current IAM user running this module
-  bucket_policy_statements = {
-    AllowCurrentUserReadWriteAccess = {
-      effect = "Allow"
-      actions = [
-        "s3:Get*",
-        "s3:List*",
-        "s3:Put*"
-      ]
-      principals = {
-        AWS = ["arn:aws:iam::${var.account_id}:root"]
+    transition = [{
+      days          = 30            # integer >= 0
+      storage_class = "DEEP_ARCHIVE" # string/enum, one of GLACIER, STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING, DEEP_ARCHIVE, GLACIER_IR.
       }
-    }
-  }
-
-  # variable "lifecycle_rules" {
-  #   {
-  #    deep_archive = {
-  #      prefix  = "/"
-  #      enabled = true
-  
-  #      transition = {
-  #        ToGlacier = {
-  #          days          = 20
-  #          storage_class = "DEEP_ARCHIVE"
-  #        }
-  #      }
-  
-  #      noncurrent_version_expiration = 90
-  #     }
-  #   }
-  # }
+    ]
+    noncurrent_version_transition = [{
+      newer_noncurrent_versions = 3            # integer >= 0
+      noncurrent_days           = 30           # integer >= 0
+      storage_class             = "DEEP_ARCHIVE" # string/enum, one of GLACIER, STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING, DEEP_ARCHIVE, GLACIER_IR.
+    }]
+  }]
 }
 
+module "s3_bucket" {
+  source = "cloudposse/s3-bucket/aws"
+  # Cloud Posse recommends pinning every module to a specific version
+  # version = "x.x.x"
+  bucket_name              = var.bucket_name
+  acl                      = ""
+  enabled                  = true
+  user_enabled             = false
+  versioning_enabled       = true
+  lifecycle_configuration_rules = local.lifecycle_configuration_rules
+
+  allowed_bucket_actions = [
+    "s3:PutObject",
+    "s3:PutObjectAcl",
+    "s3:GetObject",
+    "s3:DeleteObject",
+    "s3:ListBucket",
+    "s3:ListBucketMultipartUploads",
+    "s3:GetBucketLocation",
+    "s3:AbortMultipartUpload"
+  ]
+}
+
+# # module "s3_bucket" {
+# #   source = "git::git@github.com:gruntwork-io/terraform-aws-service-catalog.git//modules/data-stores/s3-bucket?ref=v0.104.6"
+
+# #   primary_bucket        = var.bucket_name
+# #   bucket_policy_statements = {
+# #     AllowCurrentUserReadWriteAccess = {
+# #       effect = "Allow"
+# #       actions = [
+# #         "s3:Get*",
+# #         "s3:List*",
+# #         "s3:Put*"
+# #       ]
+# #       principals = {
+# #         AWS = ["arn:aws:iam::${var.account_id}:root"]
+# #       }
+# #     }
+# #   }
+# # }
 # ---------------------------------------------------------------------------------------------------------------------
 # SET UP IAM ROLE FOR SERVICE ACCOUNT
 # Set up IRSA if a service account and IAM role are configured.

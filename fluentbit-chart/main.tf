@@ -127,7 +127,8 @@ locals {
 }
 
 module "s3_bucket" {
-  source = "tfr:///cloudposse/s3-bucket/aws?version=3.1.1"
+  source  = "cloudposse/s3-bucket/aws"
+  version = "3.1.1"
 
   privileged_principal_actions = [
     "s3:PutObject",

@@ -7,9 +7,9 @@ kind: DaemonSet
 replicaCount: 1
 
 image:
-  repository: public.ecr.aws/aws-observability/aws-for-fluent-bit:2.31.8
+  repository: public.ecr.aws/aws-observability/aws-for-fluent-bit
   # Overrides the image tag whose default is {{ .Chart.AppVersion }}
-  tag: ""
+  tag: "2.31.8"
   pullPolicy: Always
 
 testFramework:

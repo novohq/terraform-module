@@ -136,7 +136,7 @@ module "s3_bucket" {
   # Cloud Posse recommends pinning every module to a specific version
   # version = "x.x.x"
   bucket_name              = var.bucket_name
-  acl                      = ""
+  s3_object_ownership      = "BucketOwnerEnforced"
   enabled                  = true
   user_enabled             = false
   versioning_enabled       = true

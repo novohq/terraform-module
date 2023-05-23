@@ -369,3 +369,8 @@ variable "account_id" {
   type        = string
   default     = ""
 }
+variable "expiration_days" {
+  description = "object expiration days"
+  type        = number
+  default     = "1200"
+}

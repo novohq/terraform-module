@@ -96,7 +96,7 @@ locals {
     abort_incomplete_multipart_upload_days = 1 # number
     filter_and = null
     expiration = {
-      days = 5000 # integer > 0
+      days = var.expiration_days # integer > 0
     }
     noncurrent_version_expiration = {
       noncurrent_days           = 50 # integer >= 0

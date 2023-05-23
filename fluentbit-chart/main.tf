@@ -84,17 +84,6 @@ resource "null_resource" "sleep_for_resource_culling" {
   }
 }
 
-locals {
-  iam_role = (
-    var.iam_role_name != ""
-    ? (
-      var.iam_role_exists
-      ? data.aws_iam_role.existing_role[0].arn
-      : aws_iam_role.new_role[0].arn
-    )
-    : ""
-  )
-}
 
 #---------------------------------------------------------------------------------------------------------------------
 # Set up S3 bucket for logging

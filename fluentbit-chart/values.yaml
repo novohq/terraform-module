@@ -370,8 +370,8 @@ config:
     [OUTPUT]
         Name s3
         Match *
-        bucket novo-dev-logging-persistent-storage
-        region us-east-1
+        bucket ${AWS_BUCKET}
+        region ${AWS_REGION}
         store_dir /var/log/fluentbit
         total_file_size 10M
         upload_timeout 3m

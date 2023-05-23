@@ -104,6 +104,16 @@ locals {
     enabled = true # bool
     id      = "v2rule"
 
+    expiration = {
+      days                         = null
+      expired_object_delete_marker = null
+    }
+    filter_and = {}
+    id         = "nofilter"
+    noncurrent_version_expiration = {
+      newer_noncurrent_versions = 2
+      noncurrent_days           = 30
+    }
     abort_incomplete_multipart_upload_days = 1 # number
 
     filter_and = null

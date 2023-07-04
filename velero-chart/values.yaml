@@ -104,7 +104,11 @@ readinessProbe:
   failureThreshold: 5
 
 # Tolerations to use for the Velero deployment. Optional.
-tolerations: []
+tolerations:
+  - key: "novo"
+    operator: "Equal"
+    effect: "NoSchedule"
+    value: "application"
 
 # Affinity to use for the Velero deployment. Optional.
 affinity: {}

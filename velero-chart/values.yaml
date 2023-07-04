@@ -109,6 +109,14 @@ tolerations:
     operator: "Equal"
     effect: "NoSchedule"
     value: "application"
+  - key: "novo"
+    operator: "Equal"
+    effect: "NoSchedule"
+    value: "worker"
+  - key: "application"
+    operator: "Equal"
+    effect: "NoSchedule"
+    value: "memory-optimized"  
 
 # Affinity to use for the Velero deployment. Optional.
 affinity: {}

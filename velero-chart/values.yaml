@@ -300,6 +300,11 @@ configuration:
     #  Option to skip certificate validation or not if insecureSkipTLSVerify is set to be true, the client side should set the
     #  flag. For Velero client Command like velero backup describe, velero backup logs needs to add the flag --insecure-skip-tls-verify
     #  insecureSkipTLSVerify:
+  volumeSnapshotLocation:
+    name: aws
+    config:
+      region: us-east-1
+  logLevel: debug
 
   # Parameters for the VolumeSnapshotLocation(s). Configure multiple by adding other element(s) to the volumeSnapshotLocation slice.
   # See https://velero.io/docs/v1.6/api-types/volumesnapshotlocation/

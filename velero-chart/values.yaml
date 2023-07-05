@@ -259,7 +259,6 @@ cleanUpCRDs: false
 configuration:
   # Parameters for the BackupStorageLocation(s). Configure multiple by adding other element(s) to the backupStorageLocation slice.
   # See https://velero.io/docs/v1.6/api-types/backupstoragelocation/
-  provider: aws
   backupStorageLocation:
     # name is the name of the backup storage location where backups should be stored. If a name is not provided,
     # a backup storage location will be created with the name "default". Optional.
@@ -301,7 +300,8 @@ configuration:
     #  flag. For Velero client Command like velero backup describe, velero backup logs needs to add the flag --insecure-skip-tls-verify
     #  insecureSkipTLSVerify:
   volumeSnapshotLocation:
-    name: aws
+  - name:
+    provider: aws
     config:
       region: us-east-1
   logLevel: debug

@@ -142,6 +142,90 @@ module "s3_bucket" {
 
 }
 
+
+resource "aws_iam_policy" "policy" {
+  name        = "VeleroAccessPolicy"
+  path        = "/"
+  description = "Access policy from gruntwork.io for Velero"
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeVolumes",
+                "ec2:DescribeSnapshots",
+                "ec2:CreateTags",
+                "ec2:CreateVolume",
+                "ec2:CreateSnapshot",
+                "ec2:DeleteSnapshot"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:DeleteObject",
+                "s3:PutObject",
+                "s3:AbortMultipartUpload",
+                "s3:ListMultipartUploadParts"
+            ],
+            "Resource": [
+                "arn:aws:s3:::novo-dev-velero-storage/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::novo-dev-velero-storage"
+            ]
+        }
+    ]
+  })
+}
+
+
+# resource "aws_iam_role" "velero_role" {
+#   name = var.role_name
+#   # Add other required IAM role configuration options
+# }
+
+# resource "aws_iam_policy_attachment" "velero_policy_attachment" {
+#   name       = "velero-policy-attachment"
+#   roles      = [aws_iam_role.velero_role.name]
+#   policy_arn = var.policy_arn
+# }
+
+# resource "kubernetes_service_account" "velero_service_account" {
+#   metadata {
+#     name      = var.application_name
+#     namespace = var.velero_namespace
+#   }
+# }
+
+# resource "kubernetes_cluster_role_binding" "velero_cluster_role_binding" {
+#   metadata {
+#     name = "velero-cluster-role-binding"
+#   }
+#   role_ref {
+#     api_group = "rbac.authorization.k8s.io"
+#     kind      = "ClusterRole"
+#     name      = "eks-velero-backup"
+#   }
+#   subjects {
+#     kind      = "ServiceAccount"
+#     name      = kubernetes_service_account.velero_service_account.metadata[0].name
+#     namespace = kubernetes_namespace.velero_namespace.metadata[0].name
+#   }
+# }
+
 # ---------------------------------------------------------------------------------------------------------------------
 # SET UP Service account and IAM role attachement using EKSCTL
 # eksctl create iamserviceaccount \                                                                                                                                                                                                                                                                 ✱

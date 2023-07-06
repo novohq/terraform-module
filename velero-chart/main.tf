@@ -142,18 +142,18 @@ module "s3_bucket" {
 
 }
 
+module "iam_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
 
-resource "aws_iam_policy" "policy" {
   name        = "VeleroAccessPolicy"
   path        = "/"
   description = "Access policy from gruntwork.io for Velero"
 
-  # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
             "Effect": "Allow",
             "Action": [
                 "ec2:DescribeVolumes",
@@ -188,9 +188,10 @@ resource "aws_iam_policy" "policy" {
             ]
         }
     ]
-  })
 }
 
+EOF
+}
 
 # resource "aws_iam_role" "velero_role" {
 #   name = var.role_name

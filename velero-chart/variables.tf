@@ -374,3 +374,8 @@ variable "expiration_days" {
   type        = number
   default     = "1200"
 }
+variable "account_name" {
+  description = "account_name"
+  type        = string
+  default     = ""
+}

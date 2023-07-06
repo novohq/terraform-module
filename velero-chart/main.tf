@@ -89,8 +89,6 @@ resource "null_resource" "sleep_for_resource_culling" {
 # Set up S3 bucket for logging
 #---------------------------------------------------------------------------------------------------------------------
 locals {
-  account_vars = read_terragrunt_config(find_in_parent_folders("account.hcl"))
-  account_name = local.account_vars.locals.account_name
   lifecycle_configuration_rules = [{
     enabled = true # bool
     id      = "v2rule"
@@ -177,7 +175,7 @@ module "iam_policy" {
                 "s3:ListMultipartUploadParts"
             ],
             "Resource": [
-                "arn:aws:s3:::novo-${local.account_name}-velero-storage/*"
+                "arn:aws:s3:::novo-${var.account_name}-velero-storage/*"
             ]
         },
         {
@@ -186,7 +184,7 @@ module "iam_policy" {
                 "s3:ListBucket"
             ],
             "Resource": [
-                "arn:aws:s3:::novo-${local.account_name}-velero-storage"
+                "arn:aws:s3:::novo-${var.account_name}-velero-storage"
             ]
         }
     ]

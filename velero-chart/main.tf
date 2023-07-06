@@ -175,7 +175,7 @@ module "iam_policy" {
                 "s3:ListMultipartUploadParts"
             ],
             "Resource": [
-                "arn:aws:s3:::novo-${var.account_name}-velero-storage/*"
+                "arn:aws:s3:::${var.bucket_name}/*"
             ]
         },
         {
@@ -184,7 +184,7 @@ module "iam_policy" {
                 "s3:ListBucket"
             ],
             "Resource": [
-                "arn:aws:s3:::novo-${var.account_name}-velero-storage"
+                "arn:aws:s3:::${var.bucket_name}"
             ]
         }
     ]

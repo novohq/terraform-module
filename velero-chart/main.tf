@@ -89,6 +89,7 @@ resource "null_resource" "sleep_for_resource_culling" {
 # Set up S3 bucket for logging
 #---------------------------------------------------------------------------------------------------------------------
 locals {
+  account_vars = read_terragrunt_config(find_in_parent_folders("account.hcl"))
   account_name = local.account_vars.locals.account_name
   lifecycle_configuration_rules = [{
     enabled = true # bool

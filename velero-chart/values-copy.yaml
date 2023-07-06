@@ -263,8 +263,7 @@ configuration:
   backupStorageLocation:
     # name is the name of the backup storage location where backups should be stored. If a name is not provided,
     # a backup storage location will be created with the name "default". Optional.
-    name: "aws"
-    provider: "velero.io/aws"
+    name:
     # provider is the name for the backup storage location provider.
     # bucket is the name of the bucket to store backups in. Required.
     bucket: novo-dev-velero-storage
@@ -301,8 +300,8 @@ configuration:
     #  flag. For Velero client Command like velero backup describe, velero backup logs needs to add the flag --insecure-skip-tls-verify
     #  insecureSkipTLSVerify:
   volumeSnapshotLocation:
-    name: aws
-    provider: velero.io/aws
+    name:
+    provider: aws
     config:
       region: us-east-1
 
@@ -546,10 +545,9 @@ configMaps: {}
 ##
 ## End of additional Velero resource settings.
 ##
-#schedules: 
-#  eks-cluster:
-#    disabled: false
-#    schedule: "15 19 * * *"  # CRON expression to periodically take backups
-#    template:
-#      ttl: "240h"
-#Comentarios
+schedules: 
+  eks-cluster:
+    disabled: false
+    schedule: "15 19 * * *"  # CRON expression to periodically take backups
+    template:
+      ttl: "240h"

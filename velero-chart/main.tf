@@ -125,8 +125,7 @@ module "s3_bucket" {
     "s3:DeleteObject",
     "s3:ListBucket",
     "s3:ListBucketMultipartUploads",
-    "s3:GetBucketLocation",
-    "s3:AbortMultipartUpload"
+    "s3:GetBucketLocation"
   ]
   privileged_principal_arns      = [{"arn:aws:iam::${var.account_id}:root" = [""]}]
   

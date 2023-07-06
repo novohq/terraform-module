@@ -125,7 +125,8 @@ module "s3_bucket" {
     "s3:DeleteObject",
     "s3:ListBucket",
     "s3:ListBucketMultipartUploads",
-    "s3:GetBucketLocation"
+    "s3:GetBucketLocation",
+    "s3:AbortMultipartUpload"
   ]
   privileged_principal_arns      = [{"arn:aws:iam::${var.account_id}:root" = [""]}]
   
@@ -174,7 +175,7 @@ module "iam_policy" {
                 "s3:ListMultipartUploadParts"
             ],
             "Resource": [
-                "arn:aws:s3:::novo-dev-velero-storage/*"
+                "arn:aws:s3:::novo-${local.account_name}-velero-storage/*"
             ]
         },
         {
@@ -183,7 +184,7 @@ module "iam_policy" {
                 "s3:ListBucket"
             ],
             "Resource": [
-                "arn:aws:s3:::novo-dev-velero-storage"
+                "arn:aws:s3:::novo-${local.account_name}-velero-storage"
             ]
         }
     ]

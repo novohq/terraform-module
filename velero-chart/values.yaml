@@ -251,7 +251,7 @@ configuration:
   backupStorageLocation:
     name: "aws"
     provider: "velero.io/aws"
-    bucket: novo-dev-velero-storage
+    bucket: novo-dev-velero-storagedff
     accessMode: ReadWrite
   volumeSnapshotLocation:
     name: aws

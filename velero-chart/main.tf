@@ -196,7 +196,9 @@ EOF
 
  resource "aws_iam_role" "velero_role" {
    name = "eks-velero-backup"
-   # Add other required IAM role configuration options
+   policy_arns = [
+    "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
+  ]
  }
 
  resource "aws_iam_policy_attachment" "velero_policy_attachment" {

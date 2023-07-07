@@ -151,9 +151,6 @@ resource "null_resource" "eks-sa" {
 # Set up S3 bucket for logging
 #---------------------------------------------------------------------------------------------------------------------
 locals {
-  appname = var.application_name
-  nmspace = var.namespace
-  acc_id = var.account_id
   lifecycle_configuration_rules = [{
     enabled = true # bool
     id      = "v2rule"

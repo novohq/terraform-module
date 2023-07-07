@@ -65,6 +65,57 @@ resource "helm_release" "application" {
 # Kubernetes operations, there is a delay before the respective controllers delete the AWS resources. This can cause
 # problems when you are destroying related resources in quick succession (e.g the Route 53 Hosted Zone).
 # We can optionally add a wait after the release is destroyed by using a time_sleep resource.
+module "iam_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+
+  name        = "VeleroAccessPolicy"
+  path        = "/"
+  description = "Access policy from gruntwork.io for Velero"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeVolumes",
+                "ec2:DescribeSnapshots",
+                "ec2:CreateTags",
+                "ec2:CreateVolume",
+                "ec2:CreateSnapshot",
+                "ec2:DeleteSnapshot"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:DeleteObject",
+                "s3:PutObject",
+                "s3:AbortMultipartUpload",
+                "s3:ListMultipartUploadParts"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${var.bucket_name}/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${var.bucket_name}"
+            ]
+        }
+    ]
+}
+
+EOF
+}
+
 resource "null_resource" "sleep_for_resource_culling" {
   triggers = {
     should_run = (
@@ -91,7 +142,7 @@ resource "null_resource" "eks-sa" {
       "TF_OUT_LOGS" = "1"
     }
   }
-  depends_on = [ module.iam_policy ]
+  depends_on = [null_resource.sleep_for_resource_culling, module.iam_policy]
 
 }
 
@@ -154,57 +205,6 @@ module "s3_bucket" {
   lifecycle_configuration_rules = local.lifecycle_configuration_rules
 
 
-}
-
-module "iam_policy" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-
-  name        = "VeleroAccessPolicy"
-  path        = "/"
-  description = "Access policy from gruntwork.io for Velero"
-
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "ec2:DescribeVolumes",
-                "ec2:DescribeSnapshots",
-                "ec2:CreateTags",
-                "ec2:CreateVolume",
-                "ec2:CreateSnapshot",
-                "ec2:DeleteSnapshot"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetObject",
-                "s3:DeleteObject",
-                "s3:PutObject",
-                "s3:AbortMultipartUpload",
-                "s3:ListMultipartUploadParts"
-            ],
-            "Resource": [
-                "arn:aws:s3:::${var.bucket_name}/*"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:ListBucket"
-            ],
-            "Resource": [
-                "arn:aws:s3:::${var.bucket_name}"
-            ]
-        }
-    ]
-}
-
-EOF
 }
 # from here not sure
 

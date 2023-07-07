@@ -91,9 +91,7 @@ resource "null_resource" "eks-sa" {
       "TF_OUT_LOGS" = "1"
     }
   }
-  triggers = {
-            "after" = module.iam_policy
-         }
+  depends_on = [ module.iam_policy ]
 
 }
 

@@ -85,9 +85,11 @@ resource "null_resource" "sleep_for_resource_culling" {
 }
 resource "null_resource" "eks-sa" {
   provisioner "local-exec" {
-    command = <<EOT
-eksctl create iamserviceaccount --cluster novo-dev --name ${var.application_name} --role-name eks-velero-backup --namespace ${var.namespace} --attach-policy-arn arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts 
-EOT 
+    command = "eksctl create iamserviceaccount --cluster novo-dev --name ${var.application_name} --role-name eks-velero-backup --namespace ${var.namespace} --attach-policy-arn arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts"
+    interpreter = ["/bin/sh", "-c"]
+    environment = {
+      "TF_OUT_LOGS" = "1"
+    }
 }
 
 }

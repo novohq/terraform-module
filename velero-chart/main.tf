@@ -194,26 +194,39 @@ EOF
 }
 # from here not sure
 
- resource "aws_iam_role" "velero_role" {
-   name = "eks-velero-backup"
-   assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
-   policy_arns = [
+
+module "iam_assumable_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
+
+  create_role = true
+
+  role_name         = "eks-velero-backup"
+
+  custom_role_policy_arns = [
     "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
   ]
- }
+}
+
+#  resource "aws_iam_role" "velero_role" {
+#    name = "eks-velero-backup"
+#    assume_role_policy = <<EOF
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Effect": "Allow",
+#       "Principal": {
+#         "Service": "ec2.amazonaws.com"
+#       },
+#       "Action": "sts:AssumeRole"
+#     }
+#   ]
+# }
+# EOF
+#    policy_arns = [
+#     "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
+#   ]
+#  }
 
  resource "aws_iam_policy_attachment" "velero_policy_attachment" {
    name       = "velero-policy-attachment"

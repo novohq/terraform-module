@@ -195,71 +195,58 @@ EOF
 # from here not sure
 
 
-module "iam_assumable_role" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
+# module "iam_assumable_role" {
+#   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
 
-  trusted_role_arns = [
-    "arn:aws:iam::${var.account_id}:root"
-  ]
-
-  create_role = true
-
-  role_name         = "eks-velero-backup"
-
-  custom_role_policy_arns = [
-    "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
-  ]
-}
-
-#  resource "aws_iam_role" "velero_role" {
-#    name = "eks-velero-backup"
-#    assume_role_policy = <<EOF
-# {
-#   "Version": "2012-10-17",
-#   "Statement": [
-#     {
-#       "Effect": "Allow",
-#       "Principal": {
-#         "Service": "ec2.amazonaws.com"
-#       },
-#       "Action": "sts:AssumeRole"
-#     }
+#   trusted_role_arns = [
+#     "arn:aws:iam::${var.account_id}:root"
 #   ]
-# }
-# EOF
-#    policy_arns = [
+
+#   create_role = true
+
+#   role_name         = "eks-velero-backup"
+
+#   custom_role_policy_arns = [
 #     "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
 #   ]
+# }
+
+#  resource "kubernetes_service_account" "velero_service_account" {
+#    metadata {
+#      name      = var.application_name
+#      namespace = var.namespace
+#    }
 #  }
 
- #resource "aws_iam_policy_attachment" "velero_policy_attachment" {
- #  name       = "velero-policy-attachment"
- #  roles      = [aws_iam_role.velero_role.name]
- #  policy_arn = var.policy_arn
- #}
+#  resource "kubernetes_cluster_role_binding" "velero_cluster_role_binding" {
+#    metadata {
+#      name = "velero-cluster-role-binding"
+#    }
+#    role_ref {
+#      api_group = "rbac.authorization.k8s.io"
+#      kind      = "ClusterRole"
+#      name      = "eks-velero-backup"
+#    }
+#    subject {
+#      kind      = "ServiceAccount"
+#      name      = kubernetes_service_account.velero_service_account.metadata[0].name
+#      namespace = kubernetes_service_account.velero_service_account.metadata[0].namespace
+#    }
+#  }
 
- resource "kubernetes_service_account" "velero_service_account" {
-   metadata {
-     name      = var.application_name
-     namespace = var.namespace
-   }
- }
 
- resource "kubernetes_cluster_role_binding" "velero_cluster_role_binding" {
-   metadata {
-     name = "velero-cluster-role-binding"
-   }
-   role_ref {
-     api_group = "rbac.authorization.k8s.io"
-     kind      = "ClusterRole"
-     name      = "eks-velero-backup"
-   }
-   subject {
-     kind      = "ServiceAccount"
-     name      = kubernetes_service_account.velero_service_account.metadata[0].name
-     namespace = kubernetes_service_account.velero_service_account.metadata[0].namespace
-   }
- }
+module "kubectl" {
+  source = "git::https://github.com/claranet/terraform-null-resource.git?ref=v1.2.0"
+
+  #triggers = {
+  #  # Ejecutar el comando de kubectl cuando cambie el valor de algún recurso específico
+  #  resource_version = kubernetes_service_account.my_service_account.metadata[0].resource_version
+  #}
+
+  provisioner_local-exec "kubectl_apply" {
+    command = "eksctl create iamserviceaccount --cluster novo-dev --name velero --role-name eks-velero-backup --namespace velero --attach-policy-arn arn:aws:iam::501609288792:policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts"
+  }
+}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # SET UP Service account and IAM role attachement using EKSCTL

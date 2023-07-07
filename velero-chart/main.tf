@@ -198,6 +198,11 @@ EOF
 module "iam_assumable_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
 
+  trusted_role_arns = [
+    "arn:aws:iam::${var.account_id}:root",
+    "arn:aws:iam::${var.account_id}:user/anton",
+  ]
+
   create_role = true
 
   role_name         = "eks-velero-backup"

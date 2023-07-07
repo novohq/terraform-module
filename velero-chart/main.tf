@@ -142,7 +142,7 @@ resource "null_resource" "eks-sa" {
       "TF_OUT_LOGS" = "1"
     }
   }
-  depends_on = [null_resource.sleep_for_resource_culling, module.iam_policy]
+  depends_on = [module.iam_policy]
 
 }
 

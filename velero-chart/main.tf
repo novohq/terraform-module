@@ -73,7 +73,6 @@ resource "null_resource" "sleep_for_resource_culling" {
       : "false"
     )
   }
-
   provisioner "local-exec" {
     command = (
       self.triggers["should_run"] == "true"
@@ -82,13 +81,14 @@ resource "null_resource" "sleep_for_resource_culling" {
     )
     when = destroy
   }
-
+  
+}
+resource "null_resource" "eks-sa" {
   provisioner "local-exec" {
     command = (
       "eksctl create iamserviceaccount --cluster novo-dev --name velero --role-name eks-velero-backup --namespace velero --attach-policy-arn arn:aws:iam::501609288792:policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts"
     )
   }
-
 
 }
 

@@ -90,7 +90,10 @@ resource "null_resource" "eks-sa" {
     environment = {
       "TF_OUT_LOGS" = "1"
     }
-}
+  }
+  triggers = {
+            "after" = module.iam_policy
+         }
 
 }
 

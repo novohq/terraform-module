@@ -235,18 +235,18 @@ EOF
 #  }
 
 
-module "kubectl" {
-  source = "git::https://github.com/claranet/terraform-null-resource.git?ref=v1.2.0"
-
-  #triggers = {
-  #  # Ejecutar el comando de kubectl cuando cambie el valor de algún recurso específico
-  #  resource_version = kubernetes_service_account.my_service_account.metadata[0].resource_version
-  #}
-
-  provisioner_local-exec "kubectl_apply" {
-    command = "eksctl create iamserviceaccount --cluster novo-dev --name velero --role-name eks-velero-backup --namespace velero --attach-policy-arn arn:aws:iam::501609288792:policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts"
-  }
-}
+#module "kubectl" {
+#  source = "git::https://github.com/claranet/terraform-null-resource.git?ref=v1.2.0"
+#
+#  #triggers = {
+#  #  # Ejecutar el comando de kubectl cuando cambie el valor de algún recurso específico
+#  #  resource_version = kubernetes_service_account.my_service_account.metadata[0].resource_version
+#  #}
+#
+#  provisioner_local-exec "kubectl_apply" {
+#    command = "eksctl create iamserviceaccount --cluster novo-dev --name velero --role-name eks-velero-backup --namespace velero --attach-policy-arn arn:aws:iam::501609288792:policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts"
+#  }
+#}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # SET UP Service account and IAM role attachement using EKSCTL

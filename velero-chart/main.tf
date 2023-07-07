@@ -192,40 +192,41 @@ module "iam_policy" {
 
 EOF
 }
+# from here not sure
 
-# resource "aws_iam_role" "velero_role" {
-#   name = var.role_name
-#   # Add other required IAM role configuration options
-# }
+ resource "aws_iam_role" "velero_role" {
+   name = "eks-velero-backup"
+   # Add other required IAM role configuration options
+ }
 
-# resource "aws_iam_policy_attachment" "velero_policy_attachment" {
-#   name       = "velero-policy-attachment"
-#   roles      = [aws_iam_role.velero_role.name]
-#   policy_arn = var.policy_arn
-# }
+ resource "aws_iam_policy_attachment" "velero_policy_attachment" {
+   name       = "velero-policy-attachment"
+   roles      = [aws_iam_role.velero_role.name]
+   policy_arn = var.policy_arn
+ }
 
-# resource "kubernetes_service_account" "velero_service_account" {
-#   metadata {
-#     name      = var.application_name
-#     namespace = var.velero_namespace
-#   }
-# }
+ resource "kubernetes_service_account" "velero_service_account" {
+   metadata {
+     name      = var.application_name
+     namespace = var.namespace
+   }
+ }
 
-# resource "kubernetes_cluster_role_binding" "velero_cluster_role_binding" {
-#   metadata {
-#     name = "velero-cluster-role-binding"
-#   }
-#   role_ref {
-#     api_group = "rbac.authorization.k8s.io"
-#     kind      = "ClusterRole"
-#     name      = "eks-velero-backup"
-#   }
-#   subjects {
-#     kind      = "ServiceAccount"
-#     name      = kubernetes_service_account.velero_service_account.metadata[0].name
-#     namespace = kubernetes_namespace.velero_namespace.metadata[0].name
-#   }
-# }
+ resource "kubernetes_cluster_role_binding" "velero_cluster_role_binding" {
+   metadata {
+     name = "velero-cluster-role-binding"
+   }
+   role_ref {
+     api_group = "rbac.authorization.k8s.io"
+     kind      = "ClusterRole"
+     name      = "eks-velero-backup"
+   }
+   subjects {
+     kind      = "ServiceAccount"
+     name      = kubernetes_service_account.velero_service_account.metadata[0].name
+     namespace = kubernetes_namespace.velero_namespace.metadata[0].name
+   }
+ }
 
 # ---------------------------------------------------------------------------------------------------------------------
 # SET UP Service account and IAM role attachement using EKSCTL

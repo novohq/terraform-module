@@ -86,7 +86,7 @@ resource "null_resource" "sleep_for_resource_culling" {
 resource "null_resource" "eks-sa" {
   provisioner "local-exec" {
     command = (
-      "eksctl create iamserviceaccount --cluster novo-dev --name '${var.application_name}' --role-name eks-velero-backup --namespace '${var.namespace}' --attach-policy-arn arn:aws:iam::'${var.account_id}':policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts"
+      "eksctl create iamserviceaccount --cluster novo-dev --name ${local.appname} --role-name eks-velero-backup --namespace ${local.nmspace} --attach-policy-arn arn:aws:iam::${local.acc_id}:policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts"
     )
   }
 
@@ -97,6 +97,9 @@ resource "null_resource" "eks-sa" {
 # Set up S3 bucket for logging
 #---------------------------------------------------------------------------------------------------------------------
 locals {
+  appname = var.application_name
+  nmspace = var.namespace
+  acc_id = var.account_id
   lifecycle_configuration_rules = [{
     enabled = true # bool
     id      = "v2rule"

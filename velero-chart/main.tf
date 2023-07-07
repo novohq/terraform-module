@@ -196,6 +196,20 @@ EOF
 
  resource "aws_iam_role" "velero_role" {
    name = "eks-velero-backup"
+   assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
    policy_arns = [
     "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
   ]

@@ -379,3 +379,8 @@ variable "account_name" {
   type        = string
   default     = ""
 }
+
+variable "policy_arn" {
+  description = "Policy arn"
+  type        = string
+}

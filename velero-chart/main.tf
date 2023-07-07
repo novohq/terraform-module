@@ -228,11 +228,11 @@ module "iam_assumable_role" {
 #   ]
 #  }
 
- resource "aws_iam_policy_attachment" "velero_policy_attachment" {
-   name       = "velero-policy-attachment"
-   roles      = [aws_iam_role.velero_role.name]
-   policy_arn = var.policy_arn
- }
+ #resource "aws_iam_policy_attachment" "velero_policy_attachment" {
+ #  name       = "velero-policy-attachment"
+ #  roles      = [aws_iam_role.velero_role.name]
+ #  policy_arn = var.policy_arn
+ #}
 
  resource "kubernetes_service_account" "velero_service_account" {
    metadata {
@@ -250,7 +250,7 @@ module "iam_assumable_role" {
      kind      = "ClusterRole"
      name      = "eks-velero-backup"
    }
-   subjects {
+   subject {
      kind      = "ServiceAccount"
      name      = kubernetes_service_account.velero_service_account.metadata[0].name
      namespace = kubernetes_namespace.velero_namespace.metadata[0].name

@@ -253,7 +253,7 @@ module "iam_assumable_role" {
    subject {
      kind      = "ServiceAccount"
      name      = kubernetes_service_account.velero_service_account.metadata[0].name
-     namespace = kubernetes_namespace.velero_namespace.metadata[0].name
+     namespace = kubernetes_service_account.velero_service_account.metadata[0].namespace
    }
  }
 

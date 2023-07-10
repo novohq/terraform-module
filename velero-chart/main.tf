@@ -246,7 +246,7 @@ module "iam_iam-assumable-role-with-oidc" {
      name      = var.application_name
      namespace = var.namespace
      annotations = {
-       "eks.amazonaws.com/role-arn" = module.iam_assumable_role.iam_role_arn
+       "eks.amazonaws.com/role-arn" = module.iam_iam-assumable-role-with-oidc.iam_role_arn
      }
    }
  }

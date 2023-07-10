@@ -224,11 +224,11 @@ module "iam_assumable_role" {
    metadata {
      name      = var.application_name
      namespace = var.namespace
-     trusted_role_actions = [
-       "sts:AssumeRoleWithWebIdentity"
-     ]
      annotations = {
        "eks.amazonaws.com/role-arn" = module.iam_assumable_role.iam_role_arn
+       trusted_role_actions = [
+       "sts:AssumeRoleWithWebIdentity"
+     ]
      }
    }
  }

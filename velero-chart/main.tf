@@ -226,9 +226,9 @@ module "iam_assumable_role_admin" {
   source = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
 
   create_role = true
-  trusted_role_actions = [
-       "sts:AssumeRoleWithWebIdentity"
-     ]
+  #trusted_role_actions = [
+  #     "sts:AssumeRoleWithWebIdentity"
+  #   ]
 
   role_name = "eks-velero-backup"
 
@@ -238,8 +238,6 @@ module "iam_assumable_role_admin" {
   role_policy_arns = [
     "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
   ]
-
-  oidc_fully_qualified_subjects = ["system:serviceaccount:default:sa1", "system:serviceaccount:default:sa2"]
 }
 
  resource "kubernetes_service_account" "velero_service_account" {

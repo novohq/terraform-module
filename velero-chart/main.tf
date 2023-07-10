@@ -222,8 +222,9 @@ EOF
 #   ]
 # }
 
-module "iam_assumable_role_admin" {
-  source = "github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-assumable-role-with-oidc"
+module "iam_iam-assumable-role-with-oidc" {
+  source = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+  version = "5.27.0"
 
   create_role = true
   #trusted_role_actions = [

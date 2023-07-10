@@ -83,18 +83,16 @@ resource "null_resource" "sleep_for_resource_culling" {
   }
   
 }
-resource "null_resource" "eks-sa" {
-  provisioner "local-exec" {
-    command = "sleep 5 && eksctl create iamserviceaccount --cluster novo-dev --name ${var.application_name} --role-name eks-velero-backup --namespace ${var.namespace} --attach-policy-arn arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts"
-    interpreter = ["/bin/sh", "-c"]
-    environment = {
-      "TF_OUT_LOGS" = "1"
-    }
-  }
-  
-
-}
-
+#resource "null_resource" "eks-sa" {
+#  provisioner "local-exec" {
+#    command = "sleep 5 && eksctl create iamserviceaccount --cluster novo-dev --name ${var.application_name} --role-name eks-velero-backup --namespace ${var.namespace} --attach-policy-arn arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts"
+#    interpreter = ["/bin/sh", "-c"]
+#    environment = {
+#      "TF_OUT_LOGS" = "1"
+#    }
+#  }
+#}
+#
 
 #---------------------------------------------------------------------------------------------------------------------
 # Set up S3 bucket for logging
@@ -206,44 +204,44 @@ EOF
 # from here not sure
 
 
-# module "iam_assumable_role" {
-#   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
+module "iam_assumable_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
 
-#   trusted_role_arns = [
-#     "arn:aws:iam::${var.account_id}:root"
-#   ]
+  trusted_role_arns = [
+    "arn:aws:iam::${var.account_id}:root"
+  ]
 
-#   create_role = true
+  create_role = true
 
-#   role_name         = "eks-velero-backup"
+  role_name         = "eks-velero-backup"
 
-#   custom_role_policy_arns = [
-#     "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
-#   ]
-# }
+  custom_role_policy_arns = [
+    "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
+  ]
+}
 
-#  resource "kubernetes_service_account" "velero_service_account" {
-#    metadata {
-#      name      = var.application_name
-#      namespace = var.namespace
-#    }
-#  }
+ resource "kubernetes_service_account" "velero_service_account" {
+   metadata {
+     name      = var.application_name
+     namespace = var.namespace
+   }
+ }
 
-#  resource "kubernetes_cluster_role_binding" "velero_cluster_role_binding" {
-#    metadata {
-#      name = "velero-cluster-role-binding"
-#    }
-#    role_ref {
-#      api_group = "rbac.authorization.k8s.io"
-#      kind      = "ClusterRole"
-#      name      = "eks-velero-backup"
-#    }
-#    subject {
-#      kind      = "ServiceAccount"
-#      name      = kubernetes_service_account.velero_service_account.metadata[0].name
-#      namespace = kubernetes_service_account.velero_service_account.metadata[0].namespace
-#    }
-#  }
+ resource "kubernetes_cluster_role_binding" "velero_cluster_role_binding" {
+   metadata {
+     name = "velero-cluster-role-binding"
+   }
+   role_ref {
+     api_group = "rbac.authorization.k8s.io"
+     kind      = "ClusterRole"
+     name      = "eks-velero-backup"
+   }
+   subject {
+     kind      = "ServiceAccount"
+     name      = kubernetes_service_account.velero_service_account.metadata[0].name
+     namespace = kubernetes_service_account.velero_service_account.metadata[0].namespace
+   }
+ }
 
 
 #module "kubectl" {

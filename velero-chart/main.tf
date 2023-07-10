@@ -210,7 +210,9 @@ module "iam_assumable_role" {
   trusted_role_arns = [
     "arn:aws:iam::${var.account_id}:root"
   ]
-
+  trusted_role_actions = [
+       "sts:AssumeRoleWithWebIdentity"
+     ]
   create_role = true
 
   role_name         = "eks-velero-backup"
@@ -226,9 +228,6 @@ module "iam_assumable_role" {
      namespace = var.namespace
      annotations = {
        "eks.amazonaws.com/role-arn" = module.iam_assumable_role.iam_role_arn
-       trusted_role_actions = [
-       "sts:AssumeRoleWithWebIdentity"
-     ]
      }
    }
  }

@@ -384,3 +384,8 @@ variable "policy_arn" {
   description = "Policy arn"
   type        = string
 }
+
+variable "openid_connect_provider_url" {
+  description = "OIDC URL from cluster"
+  type        = string
+}

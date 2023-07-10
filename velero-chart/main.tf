@@ -83,16 +83,6 @@ resource "null_resource" "sleep_for_resource_culling" {
   }
   
 }
-#resource "null_resource" "eks-sa" {
-#  provisioner "local-exec" {
-#    command = "sleep 5 && eksctl create iamserviceaccount --cluster novo-dev --name ${var.application_name} --role-name eks-velero-backup --namespace ${var.namespace} --attach-policy-arn arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts"
-#    interpreter = ["/bin/sh", "-c"]
-#    environment = {
-#      "TF_OUT_LOGS" = "1"
-#    }
-#  }
-#}
-#
 
 #---------------------------------------------------------------------------------------------------------------------
 # Set up S3 bucket for logging
@@ -201,40 +191,16 @@ module "iam_policy" {
 
 EOF
 }
-# from here not sure
-
-
-# module "iam_assumable_role" {
-#   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-
-#   trusted_role_arns = [
-#     "arn:aws:iam::${var.account_id}:root"
-#   ]
-#   trusted_role_actions = [
-#        "sts:AssumeRoleWithWebIdentity"
-#      ]
-#   create_role = true
-
-#   role_name         = "eks-velero-backup"
-
-#   custom_role_policy_arns = [
-#     "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
-#   ]
-# }
 
 module "iam_iam-assumable-role-with-oidc" {
   source = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version = "5.27.0"
 
   create_role = true
-  #trusted_role_actions = [
-  #     "sts:AssumeRoleWithWebIdentity"
-  #   ]
 
   role_name = "eks-velero-backup"
 
-  provider_url  = "oidc.eks.us-east-1.amazonaws.com/id/FA62C0FE28019A40162F6EDEAC7B6074"
-  provider_urls = ["oidc.eks.us-east-1.amazonaws.com/id/FA62C0FE28019A40162F6EDEAC7B6074"]
+  provider_url  = "${var.openid_connect_provider_url}"
 
   role_policy_arns = [
     "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
@@ -266,20 +232,6 @@ module "iam_iam-assumable-role-with-oidc" {
      namespace = kubernetes_service_account.velero_service_account.metadata[0].namespace
    }
  }
-
-
-#module "kubectl" {
-#  source = "git::https://github.com/claranet/terraform-null-resource.git?ref=v1.2.0"
-#
-#  #triggers = {
-#  #  # Ejecutar el comando de kubectl cuando cambie el valor de algún recurso específico
-#  #  resource_version = kubernetes_service_account.my_service_account.metadata[0].resource_version
-#  #}
-#
-#  provisioner_local-exec "kubectl_apply" {
-#    command = "eksctl create iamserviceaccount --cluster novo-dev --name velero --role-name eks-velero-backup --namespace velero --attach-policy-arn arn:aws:iam::501609288792:policy/VeleroAccessPolicy --approve --override-existing-serviceaccounts"
-#  }
-#}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # SET UP Service account and IAM role attachement using EKSCTL

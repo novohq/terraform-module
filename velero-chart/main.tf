@@ -232,8 +232,8 @@ module "iam_assumable_role_admin" {
 
   role_name = "eks-velero-backup"
 
-  provider_url  = "oidc.eks.eu-west-1.amazonaws.com/id/FA62C0FE28019A40162F6EDEAC7B6074"
-  provider_urls = ["oidc.eks.eu-west-1.amazonaws.com/id/FA62C0FE28019A40162F6EDEAC7B6074"]
+  provider_url  = "oidc.eks.us-east-1.amazonaws.com/id/FA62C0FE28019A40162F6EDEAC7B6074"
+  provider_urls = ["oidc.eks.us-east-1.amazonaws.com/id/FA62C0FE28019A40162F6EDEAC7B6074"]
 
   role_policy_arns = [
     "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"

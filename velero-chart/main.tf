@@ -204,22 +204,42 @@ EOF
 # from here not sure
 
 
-module "iam_assumable_role" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
+# module "iam_assumable_role" {
+#   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
 
-  trusted_role_arns = [
-    "arn:aws:iam::${var.account_id}:root"
-  ]
+#   trusted_role_arns = [
+#     "arn:aws:iam::${var.account_id}:root"
+#   ]
+#   trusted_role_actions = [
+#        "sts:AssumeRoleWithWebIdentity"
+#      ]
+#   create_role = true
+
+#   role_name         = "eks-velero-backup"
+
+#   custom_role_policy_arns = [
+#     "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
+#   ]
+# }
+
+module "iam_assumable_role_admin" {
+  source = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+
+  create_role = true
   trusted_role_actions = [
        "sts:AssumeRoleWithWebIdentity"
      ]
-  create_role = true
 
-  role_name         = "eks-velero-backup"
+  role_name = "eks-velero-backup"
 
-  custom_role_policy_arns = [
+  provider_url  = "oidc.eks.eu-west-1.amazonaws.com/id/FA62C0FE28019A40162F6EDEAC7B6074"
+  provider_urls = ["oidc.eks.eu-west-1.amazonaws.com/id/FA62C0FE28019A40162F6EDEAC7B6074"]
+
+  role_policy_arns = [
     "arn:aws:iam::${var.account_id}:policy/VeleroAccessPolicy"
   ]
+
+  oidc_fully_qualified_subjects = ["system:serviceaccount:default:sa1", "system:serviceaccount:default:sa2"]
 }
 
  resource "kubernetes_service_account" "velero_service_account" {

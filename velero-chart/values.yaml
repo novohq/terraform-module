@@ -393,7 +393,7 @@ nodeAgent:
   nodeSelector: {}
   affinity: {}
   dnsConfig: {}
-schedules: {}
+#schedules: {}
 configMaps: {}
 
 ##
@@ -406,3 +406,17 @@ configMaps: {}
 #    template:
 #      ttl: "240h"
 #Comentarios
+
+schedules:
+  mybackup:
+    disabled: false
+    labels:
+    annotations:
+    schedule: "50 * * * *"
+    template:
+      ttl: "240h"
+      storageLocation: default
+      includedNamespaces:
+      - '*'
+      includedResources:
+      - '*'

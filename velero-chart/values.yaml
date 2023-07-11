@@ -401,7 +401,7 @@ schedules:
     disabled: false
     labels:
     annotations:
-    schedule: "50 * * * *"
+    schedule: "23 * * * *"
     template:
       ttl: "240h"
       storageLocation: default

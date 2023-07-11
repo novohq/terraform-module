@@ -396,17 +396,6 @@ nodeAgent:
 #schedules: {}
 configMaps: {}
 
-##
-## End of additional Velero resource settings.
-##
-#schedules: 
-#  eks-cluster:
-#    disabled: false
-#    schedule: "15 19 * * *"  # CRON expression to periodically take backups
-#    template:
-#      ttl: "240h"
-#Comentarios
-
 schedules:
   mybackup:
     disabled: false

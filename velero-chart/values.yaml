@@ -397,7 +397,7 @@ nodeAgent:
 configMaps: {}
 
 schedules:
-  mybackup:
+  velero-bk:
     disabled: false
     labels:
     annotations:

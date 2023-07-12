@@ -55,7 +55,6 @@ resource "helm_release" "application" {
   # lint                       = lookup(var.lint, true)
 
   values = [templatefile("values.yaml", {
-    AWS_BUCKET = module.s3_bucket.bucket_id
     AWS_REGION = var.region
   })]
   depends_on = [null_resource.sleep_for_resource_culling]

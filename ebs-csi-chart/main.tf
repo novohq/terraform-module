@@ -128,13 +128,3 @@ module "iam_iam-assumable-role-with-oidc" {
    }
  }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# SET UP Service account and IAM role attachement using EKSCTL
-# eksctl create iamserviceaccount \                                                                                                                                                                                                                                                                 ✱
-#     --name fluentbit \
-#     --namespace logging \
-#     --cluster novo-dev \
-#     --attach-policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess \
-#     --approve --override-existing-serviceaccounts
-# ---------------------------------------------------------------------------------------------------------------------
-

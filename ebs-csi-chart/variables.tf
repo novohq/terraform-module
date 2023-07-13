@@ -329,10 +329,6 @@ variable "ingress_annotations" {
   type        = map(string)
   default     = {}
 
-  # Example:
-  # {
-  #   "alb.ingress.kubernetes.io/shield-advanced-protection" : "true"
-  # }
 }
 
 # DNS Info
@@ -349,16 +345,6 @@ variable "domain_propagation_ttl" {
   default     = null
 }
 
-variable "velero_values_file" {
-  description = "velero yaml location"
-  type        = string
-  default     = "values.yaml"
-}
-variable "bucket_name" {
-  description = "bucket name"
-  type        = string
-  default     = ""
-}
 variable "region" {
   description = "region"
   type        = string
@@ -368,11 +354,6 @@ variable "account_id" {
   description = "account"
   type        = string
   default     = ""
-}
-variable "expiration_days" {
-  description = "object expiration days"
-  type        = number
-  default     = "1200"
 }
 variable "account_name" {
   description = "account_name"

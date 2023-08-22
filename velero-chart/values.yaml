@@ -408,4 +408,4 @@ schedules:
       includedNamespaces:
       - '*'
       includedResources:
-      - '*'velero schedule create --help
+      - '*'

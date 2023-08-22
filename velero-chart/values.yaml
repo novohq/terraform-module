@@ -401,11 +401,11 @@ schedules:
     disabled: false
     labels:
     annotations:
-    schedule: "0 15 * * 2"
+    schedule: "40 16  * * 2"
     template:
       ttl: "400h"
       storageLocation: default
       includedNamespaces:
       - '*'
       includedResources:
-      - '*'
+      - '*'velero schedule create --help

@@ -255,7 +255,7 @@ configuration:
     # provider is the name for the backup storage location provider.
     provider: "aws"
     # bucket is the name of the bucket to store backups in. Required.
-    bucket: novo-dev-velero-storage
+    bucket: ${AWS_BUCKET}
     # caCert defines a base64 encoded CA bundle to use when verifying TLS connections to the provider. Optional.
     caCert:
     # prefix is the directory under which all Velero data should be stored within the bucket. Optional.
@@ -401,7 +401,7 @@ schedules:
     disabled: false
     labels:
     annotations:
-    schedule: "0 0 * * 0"
+    schedule: "0 15 * * 2"
     template:
       ttl: "400h"
       storageLocation: default

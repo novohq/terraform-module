@@ -1,0 +1,84 @@
+namespace: logging
+image:
+  repository: docker.elastic.co/beats/heartbeat
+  tag: 8.8.2
+elasticsearch:
+  host: elasticsearch-master
+  port: "9200"
+  username: elastic
+  password: "K7CG36veLK8sZgv0"
+clusterRoleRules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - namespaces
+      - pods
+      - services
+    verbs: ["get", "list", "watch"]
+  # Add other rules here...
+roleRules:
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs: ["get", "create", "update"]
+  # Add other rules here...
+heartbeatConfig: |
+  heartbeat.run_from:
+    id: default
+    geo:
+      name: eks-dev-cluster
+  heartbeat.monitors: 
+      - type: http
+        id: service-status
+        name: Service Status
+        hosts:
+          - "https://api.novo.co/health"
+          - "https://api.banknovo.com/health"
+          - "https://rabbitmq.novohq.com"
+          - "https://app.novo.co/"
+          - "https://api.banknovo.com/health"
+          - "https://onboarding.novo.co/signup"
+          - "https://onboardingapi.banknovo.com/health"
+          - "https://onboardingapi.novo.co/health"
+          - "https://webhooks.novo.co/health"
+          - "https://onboarding-adminapi.novohq.com/health"
+          - "https://adminapi.novohq.com/health"
+          - "https://rabbitmq.novohq.com"
+          - "https://app.novo.co/integrations"
+          - "https://webhooks.banknovo.com/health"
+          - "https://consent.banknovo.com/health"
+          - "https://consent.novo.co/health"
+          - "https://www.novo.co/"
+          - "https://call-forward.banknovo.com/health"
+          - "https://lendingapi.novo.co/health"
+          - "https://call-forward.novo.co/health"
+          - "https://einapply.novo.co/healthcheck"
+          - "https://lending-service-api.novo.co/health"
+          - "https://invoicing-api.novo.co/health"
+          - "https://tools.novo.co/com.novo.ebay"
+          - "https://tools.novo.co/com.novo.etsy"
+          - "https://tools.novo.co/com.novo.paypal"
+          - "https://tools.novo.co/com.novo.shopify"
+          - "https://tools.novo.co/com.novo.square"
+          - "https://tools.novo.co/com.novo.wix"
+          - "https://tools.novo.co/com.novo.woocommerce"
+          - "https://payee.novo.co/health"
+          - "https://tools.novo.co/com.novo.gusto"
+          - "https://twilio-calls.novo.co"
+        check.response.status: [200]
+        schedule: '@every 5s'    
+  processors:
+    - add_cloud_metadata:
+
+  output.elasticsearch:
+    allow_older_versions : true
+    hosts: ['https://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}']
+    username: ${ELASTICSEARCH_USERNAME}
+    password: ${ELASTICSEARCH_PASSWORD}
+    ssl.certificate_authorities: ["/usr/share/heartbeat/certs/ca.crt"]
+  setup.kibana:
+    host: "https://kibana.novo-aws-dev.com"
+  heartbeat.metrics.enabled: true 
+  heartbeat.metrics.host: 0.0.0.0:5066
+  heartbeat.monitoring.enabled: true

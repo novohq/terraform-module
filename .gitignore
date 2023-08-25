@@ -28,7 +28,6 @@
 # Icon must end with two \r
 Icon
 
-
 # Thumbnails
 ._*
 
@@ -119,7 +118,7 @@ web_modules/
 
 # Output of 'npm pack'
 *.tgz
-
+!heartbeat-chart-0.1.1.tgz
 # Yarn Integrity file
 .yarn-integrity
 
@@ -254,7 +253,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,dotenv,windows,terraform,terragrunt
-
 
 # vscode configs
 .vscode

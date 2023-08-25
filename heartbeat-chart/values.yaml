@@ -5,8 +5,6 @@ image:
 elasticsearch:
   host: elasticsearch-master
   port: "9200"
-  username: elastic
-  password: "K7CG36veLK8sZgv0"
 clusterRoleRules:
   - apiGroups: [""]
     resources:

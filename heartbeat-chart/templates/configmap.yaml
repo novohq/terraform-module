@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: heartbeat-deployment-config
+  namespace: {{ .Values.namespace }}
+data:
+  heartbeat.yml: |
+    {{ .Values.heartbeatConfig | nindent 6 }}

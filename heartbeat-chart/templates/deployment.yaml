@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "heartbeat-chart.name" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "heartbeat-chart.name" . }}
+  replicas: 1  # You can adjust the number of replicas as needed
+  template:
+    metadata:
+      labels:
+        app: {{ template "heartbeat-chart.name" . }}
+    spec:
+      serviceAccountName: {{ template "heartbeat-chart.name" . }}
+      containers:
+        - name: heartbeat
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          args:
+            - "-c"
+            - "/etc/heartbeat.yml"
+            - "-e"
+          env:
+            - name: ELASTICSEARCH_HOST
+              value: {{ .Values.elasticsearch.host }}
+            - name: ELASTICSEARCH_PORT
+              value: "{{ .Values.elasticsearch.port }}"
+            - name: ELASTICSEARCH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-master-credentials
+                  key: username
+            - name: ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-master-credentials
+                  key: password
+            # Add other environment variables as needed
+          securityContext:
+            runAsUser: 0
+          resources:
+            limits:
+              memory: 1536Mi
+              cpu: "2"
+            requests:
+              memory: 1536Mi
+              cpu: "2000m"
+          volumeMounts:
+          - name: config
+            mountPath: /etc/heartbeat.yml
+            readOnly: true
+            subPath: heartbeat.yml
+          - name: data
+            mountPath: /usr/share/heartbeat/data
+          - name: elasticsearch-master-certs
+            mountPath: /usr/share/heartbeat/certs
+      tolerations:
+      - key: "novo"
+        operator: "Equal"
+        effect: "NoSchedule"
+        value: "worker"
+      - key: "application"
+        operator: "Equal"
+        effect: "NoSchedule"
+        value: "memory-optimized"
+      volumes:
+      - name: config
+        configMap:
+          defaultMode: 0600
+          name: heartbeat-deployment-config
+      - name: data
+        hostPath:
+          path: /var/lib/heartbeat-data
+          type: DirectoryOrCreate
+      - name: elasticsearch-master-certs
+        secret:
+          secretName: elasticsearch-master-certs
+      - name: elasticsearch-master-credentials
+        secret:
+          secretName: elasticsearch-master-credentials      
+            # Add other volume mounts as needed
+      # Add other spec settings as needed

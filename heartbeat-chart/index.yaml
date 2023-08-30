@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  heartbeat-chart:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2023-08-30T14:35:31.657062-05:00"
+    description: A Helm chart for Kubernetes
+    digest: 4787e26ccee63595aec1d155093d528ab31f4de3cf50669544a2099cc2908963
+    name: heartbeat-chart
+    type: application
+    urls:
+    - https://github.com/novohq/heartbeat-chart/heartbeat-chart-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-08-30T14:35:31.656629-05:00"

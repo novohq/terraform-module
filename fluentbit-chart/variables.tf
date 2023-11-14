@@ -374,3 +374,8 @@ variable "expiration_days" {
   type        = number
   default     = "1200"
 }
+
+variable "openid_connect_provider_url" {
+  description = "OIDC URL from cluster"
+  type        = string
+}

@@ -142,6 +142,98 @@ module "s3_bucket" {
 
 }
 
+module "iam_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+
+  name        = "FluentbitAccessPolicy"
+  path        = "/"
+  description = "Access policy from gruntwork.io for Fluentbit"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeVolumes",
+                "ec2:DescribeSnapshots",
+                "ec2:CreateTags",
+                "ec2:CreateVolume",
+                "ec2:CreateSnapshot",
+                "ec2:DeleteSnapshot"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:DeleteObject",
+                "s3:PutObject",
+                "s3:AbortMultipartUpload",
+                "s3:ListMultipartUploadParts"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${var.bucket_name}/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${var.bucket_name}"
+            ]
+        }
+    ]
+}
+
+EOF
+}
+
+module "iam_iam-assumable-role-with-oidc" {
+  source = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+  version = "5.27.0"
+
+  create_role = true
+
+  role_name = "eks-fluentbit"
+
+  provider_url  = "${var.openid_connect_provider_url}"
+
+  role_policy_arns = [
+    "arn:aws:iam::${var.account_id}:policy/FluentbitAccessPolicy"
+  ]
+}
+
+ resource "kubernetes_service_account" "fluentbit_service_account" {
+   metadata {
+     name      = var.application_name
+     namespace = var.namespace
+     annotations = {
+       "eks.amazonaws.com/role-arn" = module.iam_iam-assumable-role-with-oidc.iam_role_arn
+     }
+   }
+ }
+
+ resource "kubernetes_cluster_role_binding" "fluentbit_cluster_role_binding" {
+   metadata {
+     name = "fluentbit-cluster-role-binding"
+   }
+   role_ref {
+     api_group = "rbac.authorization.k8s.io"
+     kind      = "ClusterRole"
+     name      = "eks-fluentbit"
+   }
+   subject {
+     kind      = "ServiceAccount"
+     name      = kubernetes_service_account.fluentbit_service_account.metadata[0].name
+     namespace = kubernetes_service_account.fluentbit_service_account.metadata[0].namespace
+   }
+ }
+
 # ---------------------------------------------------------------------------------------------------------------------
 # SET UP Service account and IAM role attachement using EKSCTL
 # eksctl create iamserviceaccount \                                                                                                                                                                                                                                                                 ✱
